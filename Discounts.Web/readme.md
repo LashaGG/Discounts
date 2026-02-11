@@ -1,0 +1,3 @@
+Controllers & Views: Uses the Model-View-Controller pattern to serve HTML pages directly to the browser.
+Identity & UI: It often manages user-facing authentication (like login/register pages) and client-side assets like CSS and JavaScript.
+Responsibility: While the API serves data, the Web layer serves the visual experience. In modern architectures, the Web project might also act as a client that calls the API project.

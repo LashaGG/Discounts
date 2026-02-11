@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/core/">
+    <Project Path="Discounts.Application/Discounts.Application.csproj" />
+    <Project Path="Discounts.Domain/Discounts.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/infrastructure/">
+    <Project Path="Discounts.Infrastructure/Discounts.Infrastructure.csproj" />
+    <Project Path="Discounts.Persistance/Discounts.Persistance.csproj" Id="532c90a7-0a44-45b9-95f6-cbf25f4519b5" />
+  </Folder>
+  <Folder Name="/src/presentation/">
+    <Project Path="Discounts.API/Discounts.API.csproj" />
+    <Project Path="Discounts.Web/Discounts.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="Discounts.Tests/Discounts.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/NewFolder1/" />
+</Solution>

@@ -1,0 +1,2 @@
+Controllers: Contains endpoints that handle HTTP requests (GET, POST, etc.) and return data, typically in JSON format.
+Responsibility: It focuses on API-specific concerns like JWT authentication, CORS policies, and request validation. It does not contain HTML or UI logic.
