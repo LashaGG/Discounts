@@ -1,0 +1,153 @@
+@model Dictionary<string, string>
+@{
+    ViewData["Title"] = "სისტემური პარამეტრები";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-cog"></i> სისტემური პარამეტრები</h2>
+            <p class="text-muted">გლობალური კონფიგურაცია</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <form asp-action="Settings" method="post">
+        <div class="card">
+            <div class="card-header">
+                <h5>ძირითადი პარამეტრები</h5>
+            </div>
+            <div class="card-body">
+                <!-- Reservation Duration -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-clock"></i> ჯავშნის ხანგრძლივობა (წუთები)
+                    </label>
+                    <input type="number" name="settings[ReservationDuration]" class="form-control" 
+                           value="@(Model.ContainsKey("ReservationDuration") ? Model["ReservationDuration"] : "30")" 
+                           min="5" max="120" />
+                    <small class="form-text text-muted">
+                        რამდენ წუთში უნდა მოხდეს კუპონის გადახდა ჯავშნის შემდეგ
+                    </small>
+                </div>
+
+                <!-- Merchant Edit Window -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-edit"></i> მერჩანტის რედაქტირების ვადა (საათები)
+                    </label>
+                    <input type="number" name="settings[MerchantEditWindow]" class="form-control" 
+                           value="@(Model.ContainsKey("MerchantEditWindow") ? Model["MerchantEditWindow"] : "24")" 
+                           min="1" max="168" />
+                    <small class="form-text text-muted">
+                        რამდენ საათში შეუძლია მერჩანტს ფასდაკლების რედაქტირება შექმნის შემდეგ
+                    </small>
+                </div>
+
+                <!-- Max Discounts Per Merchant -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-tags"></i> მაქს. ფასდაკლებები მერჩანტზე
+                    </label>
+                    <input type="number" name="settings[MaxDiscountsPerMerchant]" class="form-control" 
+                           value="@(Model.ContainsKey("MaxDiscountsPerMerchant") ? Model["MaxDiscountsPerMerchant"] : "100")" 
+                           min="1" max="1000" />
+                    <small class="form-text text-muted">
+                        ერთ მერჩანტს რამდენი აქტიური ფასდაკლება შეიძლება ჰქონდეს
+                    </small>
+                </div>
+
+                <!-- Max Coupons Per Discount -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-ticket-alt"></i> მაქს. კუპონები ფასდაკლებაზე
+                    </label>
+                    <input type="number" name="settings[MaxCouponsPerDiscount]" class="form-control" 
+                           value="@(Model.ContainsKey("MaxCouponsPerDiscount") ? Model["MaxCouponsPerDiscount"] : "10000")" 
+                           min="1" max="100000" />
+                    <small class="form-text text-muted">
+                        ერთ ფასდაკლებას რამდენი კუპონი შეიძლება ჰქონდეს
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>საიტის ინფორმაცია</h5>
+            </div>
+            <div class="card-body">
+                <!-- Site Name -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-globe"></i> საიტის სახელი
+                    </label>
+                    <input type="text" name="settings[SiteName]" class="form-control" 
+                           value="@(Model.ContainsKey("SiteName") ? Model["SiteName"] : "Discounts.ge")" />
+                </div>
+
+                <!-- Support Email -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i> მხარდაჭერის ელ. ფოსტა
+                    </label>
+                    <input type="email" name="settings[SupportEmail]" class="form-control" 
+                           value="@(Model.ContainsKey("SupportEmail") ? Model["SupportEmail"] : "support@discounts.ge")" />
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>სისტემური ფუნქციები</h5>
+            </div>
+            <div class="card-body">
+                <!-- Auto Approval -->
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="autoApproval" 
+                               name="settings[AutoApprovalEnabled]" value="true"
+                               @(Model.ContainsKey("AutoApprovalEnabled") && Model["AutoApprovalEnabled"] == "true" ? "checked" : "") />
+                        <label class="form-check-label" for="autoApproval">
+                            <i class="fas fa-magic"></i> ავტომატური დამტკიცება
+                        </label>
+                    </div>
+                    <small class="form-text text-muted">
+                        ფასდაკლებები დაიმტკიცება ავტომატურად ადმინის მიერ განხილვის გარეშე (არ რეკომენდებულია)
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4 mb-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-save"></i> პარამეტრების შენახვა
+            </button>
+        </div>
+    </form>
+
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        <strong>შენიშვნა:</strong> ზოგიერთი პარამეტრის შეცვლა მოითხოვს აპლიკაციის გადატვირთვას.
+    </div>
+</div>

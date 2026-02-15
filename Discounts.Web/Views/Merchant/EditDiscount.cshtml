@@ -1,0 +1,99 @@
+@model UpdateDiscountDto
+@{
+    ViewData["Title"] = "ფასდაკლების რედაქტირება";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-edit"></i> ფასდაკლების რედაქტირება</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditDiscount" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">სათაური *</label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">აღწერა *</label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CategoryId" class="form-label">კატეგორია *</label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.Categories"></select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="OriginalPrice" class="form-label">ორიგინალური ფასი *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₾</span>
+                                    <input asp-for="OriginalPrice" type="number" step="0.01" class="form-control" />
+                                </div>
+                                <span asp-validation-for="OriginalPrice" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DiscountedPrice" class="form-label">ფასდაკლებული ფასი *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₾</span>
+                                    <input asp-for="DiscountedPrice" type="number" step="0.01" class="form-control" />
+                                </div>
+                                <span asp-validation-for="DiscountedPrice" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ValidFrom" class="form-label">მოქმედების დაწყება *</label>
+                                <input asp-for="ValidFrom" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="ValidFrom" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ValidTo" class="form-label">მოქმედების დასრულება *</label>
+                                <input asp-for="ValidTo" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="ValidTo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ImageUrl" class="form-label">სურათის URL</label>
+                            <input asp-for="ImageUrl" class="form-control" />
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>გაფრთხილება:</strong> ფასდაკლების რედაქტირება შესაძლებელია მხოლოდ 24 საათის 
+                            განმავლობაში შექმნის შემდეგ, ან თუ სტატუსი არის "მოლოდინში" ან "უარყოფილი".
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="MyDiscounts" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> გაუქმება
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save"></i> განახლება
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

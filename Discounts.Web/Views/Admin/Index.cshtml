@@ -1,0 +1,213 @@
+@model AdminDashboardDto
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-tachometer-alt"></i> ადმინისტრატორის პანელი</h2>
+            <p class="text-muted">სისტემის მართვის ცენტრი</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6><i class="fas fa-users"></i> სულ მომხმარებლები</h6>
+                    <h2>@Model.TotalUsers</h2>
+                    <small>მათ შორის: @Model.TotalMerchants მერჩანტი, @Model.TotalCustomers მყიდველი</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6><i class="fas fa-tags"></i> ფასდაკლებები</h6>
+                    <h2>@Model.TotalDiscounts</h2>
+                    <small>აქტიური: @Model.ActiveDiscounts</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h6><i class="fas fa-clock"></i> მოლოდინში</h6>
+                    <h2>@Model.PendingDiscounts</h2>
+                    <a asp-action="Moderation" class="btn btn-light btn-sm mt-2">დამტკიცება</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h6><i class="fas fa-shopping-cart"></i> შეკვეთები / შემოსავალი</h6>
+                    <h2>@Model.TotalOrders</h2>
+                    <small>@Model.TotalRevenue.ToString("C")</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>სწრაფი ქმედებები</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a asp-action="Users" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-users"></i><br />მომხმარებლების მართვა
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a asp-action="Moderation" class="btn btn-outline-warning w-100 mb-2">
+                                <i class="fas fa-clipboard-check"></i><br />მოდერაცია (@Model.PendingDiscounts)
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a asp-action="Categories" class="btn btn-outline-info w-100 mb-2">
+                                <i class="fas fa-list"></i><br />კატეგორიები
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a asp-action="Settings" class="btn btn-outline-secondary w-100 mb-2">
+                                <i class="fas fa-cog"></i><br />პარამეტრები
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Discounts -->
+    @if (Model.RecentDiscounts.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>ბოლო ფასდაკლებები</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>სათაური</th>
+                                        <th>მერჩანტი</th>
+                                        <th>სტატუსი</th>
+                                        <th>ფასი</th>
+                                        <th>თარიღი</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var discount in Model.RecentDiscounts)
+                                    {
+                                        <tr>
+                                            <td>@discount.Title</td>
+                                            <td>@discount.MerchantName</td>
+                                            <td>
+                                                <span class="badge bg-@GetStatusColor(discount.Status)">
+                                                    @GetStatusText(discount.Status)
+                                                </span>
+                                            </td>
+                                            <td>@discount.DiscountedPrice.ToString("C")</td>
+                                            <td>@discount.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Recent Users -->
+    @if (Model.RecentUsers.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>ბოლო რეგისტრირებული მომხმარებლები</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>სახელი</th>
+                                        <th>ელ. ფოსტა</th>
+                                        <th>როლი</th>
+                                        <th>სტატუსი</th>
+                                        <th>თარიღი</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model.RecentUsers)
+                                    {
+                                        <tr>
+                                            <td>@user.FullName</td>
+                                            <td>@user.Email</td>
+                                            <td><span class="badge bg-primary">@user.PrimaryRole</span></td>
+                                            <td>
+                                                @if (user.IsActive)
+                                                {
+                                                    <span class="badge bg-success">აქტიური</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">დეაქტივირებული</span>
+                                                }
+                                            </td>
+                                            <td>@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@functions {
+    private static string GetStatusColor(DiscountStatus status)
+    {
+        return status switch
+        {
+            DiscountStatus.Pending => "warning",
+            DiscountStatus.Approved => "info",
+            DiscountStatus.Active => "success",
+            DiscountStatus.Rejected => "danger",
+            DiscountStatus.Expired => "secondary",
+            DiscountStatus.Suspended => "dark",
+            _ => "secondary"
+        };
+    }
+
+    private static string GetStatusText(DiscountStatus status)
+    {
+        return status switch
+        {
+            DiscountStatus.Pending => "მოლოდინში",
+            DiscountStatus.Approved => "დამტკიცებული",
+            DiscountStatus.Active => "აქტიური",
+            DiscountStatus.Rejected => "უარყოფილი",
+            DiscountStatus.Expired => "ვადაგასული",
+            DiscountStatus.Suspended => "შეჩერებული",
+            _ => status.ToString()
+        };
+    }
+}

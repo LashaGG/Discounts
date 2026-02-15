@@ -1,0 +1,199 @@
+@model IEnumerable<DiscountDto>
+@{
+    ViewData["Title"] = L["Browse_Title"].Value;
+    var categories = ViewBag.Categories as IEnumerable<Category> ?? Enumerable.Empty<Category>();
+    var selectedCategoryId = ViewBag.SelectedCategoryId as int?;
+    var searchTerm = ViewBag.SearchTerm as string;
+    var isFiltering = selectedCategoryId.HasValue || !string.IsNullOrWhiteSpace(searchTerm);
+}
+
+@* Hero section for guests on the landing page *@
+@if (User.Identity?.IsAuthenticated != true && !isFiltering)
+{
+    <div class="hero-section rounded-3 mb-4 text-center">
+        <h1><i class="fas fa-percent"></i> Discounts.ge</h1>
+        <p class="lead mb-4">@L["Browse_HeroText"]</p>
+        <div class="d-flex gap-3 justify-content-center">
+            <a asp-controller="Account" asp-action="Register" asp-route-role="Customer"
+               class="btn btn-light btn-lg">
+                <i class="fas fa-user-plus"></i> @L["Nav_Register"]
+            </a>
+            <a asp-controller="Account" asp-action="Login"
+               class="btn btn-outline-light btn-lg">
+                <i class="fas fa-sign-in-alt"></i> @L["Nav_Login"]
+            </a>
+        </div>
+    </div>
+}
+
+<div class="container-fluid mt-2">
+    <!-- Header & Search -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-7">
+            <h2><i class="fas fa-tags"></i> @L["Browse_Title"]</h2>
+            <p class="text-muted mb-0">@L["Browse_Subtitle"]</p>
+        </div>
+        <div class="col-md-5">
+            <form asp-action="Index" method="get" class="d-flex">
+                <input type="text" name="search" class="form-control"
+                       placeholder="@L["Browse_SearchPlaceholder"].Value" value="@searchTerm" />
+                <button type="submit" class="btn btn-primary ms-2">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    @if (categories.Any())
+    {
+        <div class="mb-4">
+            <a asp-action="Index"
+               class="category-pill @(selectedCategoryId == null ? "bg-primary text-white" : "")">
+                <i class="fas fa-th"></i> @L["Common_All"]
+            </a>
+            @foreach (var category in categories)
+            {
+                <a asp-action="Index" asp-route-categoryId="@category.Id"
+                   class="category-pill @(selectedCategoryId == category.Id ? "bg-primary text-white" : "")">
+                    @if (!string.IsNullOrEmpty(category.IconClass))
+                    {
+                        <i class="@category.IconClass"></i>
+                    }
+                    @category.Name
+                </a>
+            }
+        </div>
+    }
+
+    <!-- Advanced Filter -->
+    <div class="mb-3">
+        <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+            <i class="fas fa-sliders-h"></i> @L["Common_Filter"]
+        </button>
+    </div>
+
+    <div class="collapse" id="filterCollapse">
+        <div class="card mb-4">
+            <div class="card-body">
+                <form asp-action="Filter" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">@L["Common_Category"]</label>
+                            <select name="CategoryId" class="form-select">
+                                <option value="">@L["Common_All"]</option>
+                                @foreach (var category in categories)
+                                {
+                                    <option value="@category.Id">@category.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">@L["Common_MinPrice"]</label>
+                            <input type="number" name="MinPrice" class="form-control" step="0.01" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">@L["Common_MaxPrice"]</label>
+                            <input type="number" name="MaxPrice" class="form-control" step="0.01" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">@L["Common_MinDiscountPercent"]</label>
+                            <input type="number" name="MinDiscount" class="form-control" min="0" max="100" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">@L["Common_SortBy"]</label>
+                            <select name="SortBy" class="form-select">
+                                <option value="date">@L["Common_Date"]</option>
+                                <option value="price">@L["Common_Price"]</option>
+                                <option value="discount">@L["Common_Discount"]</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> @L["Common_Search"]
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary ms-1">
+                            <i class="fas fa-redo"></i> @L["Common_Clear"]
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discounts Grid -->
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5">
+            <i class="fas fa-search fa-3x mb-3 d-block"></i>
+            <h5>@L["Browse_NoResults"]</h5>
+            <p class="mb-0 text-muted">@L["Browse_TryOther"]</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var discount in Model)
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm card-hover position-relative">
+                        <span class="discount-badge badge bg-danger">
+                            -@discount.DiscountPercentage%
+                        </span>
+
+                        @if (!string.IsNullOrEmpty(discount.ImageUrl))
+                        {
+                            <img src="@discount.ImageUrl" class="card-img-top" alt="@discount.Title"
+                                 style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="bg-light text-center d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-image fa-3x text-muted"></i>
+                            </div>
+                        }
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title mb-1">@discount.Title</h5>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="fas fa-building"></i> @discount.MerchantName
+                            </p>
+                            <p class="card-text small">
+                                @if (discount.Description.Length > 80)
+                                {
+                                    @discount.Description.Substring(0, 80)@:...
+                                }
+                                else
+                                {
+                                    @discount.Description
+                                }
+                            </p>
+
+                            <div class="mt-auto">
+                                <div class="mb-2">
+                                    <del class="text-muted small">@discount.OriginalPrice.ToString("C")</del>
+                                    <span class="fs-4 fw-bold text-success">@discount.DiscountedPrice.ToString("C")</span>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-ticket-alt"></i> @L["Common_Remaining"]: @discount.AvailableCoupons
+                                    </small>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar-alt"></i> @discount.ValidTo.ToString("dd/MM")
+                                    </small>
+                                </div>
+
+                                <a asp-action="Details" asp-route-id="@discount.Id"
+                                   class="btn btn-primary w-100">
+                                    <i class="fas fa-info-circle"></i> @L["Common_Details"]
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

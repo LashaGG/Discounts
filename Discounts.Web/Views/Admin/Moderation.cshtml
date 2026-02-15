@@ -1,0 +1,165 @@
+@model IEnumerable<DiscountDto>
+@{
+    ViewData["Title"] = "ფასდაკლებების მოდერაცია";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-clipboard-check"></i> ფასდაკლებების მოდერაცია</h2>
+            <p class="text-muted">დასამტკიცებელი ფასდაკლებები (@Model.Count())</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> ამჟამად დასამტკიცებელი ფასდაკლებები არ არის.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var discount in Model)
+            {
+                <div class="col-md-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    @if (!string.IsNullOrEmpty(discount.ImageUrl))
+                                    {
+                                        <img src="@discount.ImageUrl" class="img-fluid rounded" alt="@discount.Title">
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light text-center py-5 rounded">
+                                            <i class="fas fa-image fa-3x text-muted"></i>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <h4>@discount.Title</h4>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-building"></i> <strong>მერჩანტი:</strong> @discount.MerchantName
+                                    </p>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-tag"></i> <strong>კატეგორია:</strong> @discount.CategoryName
+                                    </p>
+                                    <p>@discount.Description</p>
+                                    
+                                    <hr />
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p>
+                                                <strong>ორიგინალური ფასი:</strong> 
+                                                <del>@discount.OriginalPrice.ToString("C")</del>
+                                            </p>
+                                            <p>
+                                                <strong>ფასდაკლებული ფასი:</strong> 
+                                                <span class="text-success fs-5">@discount.DiscountedPrice.ToString("C")</span>
+                                            </p>
+                                            <p>
+                                                <span class="badge bg-danger">-@discount.DiscountPercentage%</span>
+                                            </p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>
+                                                <strong>კუპონების რაოდენობა:</strong> @discount.TotalCoupons
+                                            </p>
+                                            <p>
+                                                <strong>მოქმედების პერიოდი:</strong><br />
+                                                @discount.ValidFrom.ToString("dd/MM/yyyy") - @discount.ValidTo.ToString("dd/MM/yyyy")
+                                            </p>
+                                            <p>
+                                                <strong>შეიქმნა:</strong> @discount.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-grid gap-2">
+                                        <form asp-action="ApproveDiscount" method="post">
+                                            <input type="hidden" name="id" value="@discount.Id" />
+                                            <button type="submit" class="btn btn-success w-100" 
+                                                    onclick="return confirm('დამტკიცდეს ეს ფასდაკლება?')">
+                                                <i class="fas fa-check-circle"></i> დამტკიცება
+                                            </button>
+                                        </form>
+
+                                        <button type="button" class="btn btn-danger w-100" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#rejectModal-@discount.Id">
+                                            <i class="fas fa-times-circle"></i> უარყოფა
+                                        </button>
+
+                                        <hr />
+
+                                        <a href="/Merchant/Details/@discount.Id" target="_blank" 
+                                           class="btn btn-outline-info w-100">
+                                            <i class="fas fa-external-link-alt"></i> დეტალები
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reject Modal -->
+                    <div class="modal fade" id="rejectModal-@discount.Id" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form asp-action="RejectDiscount" method="post">
+                                    <input type="hidden" name="id" value="@discount.Id" />
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">უარყოფის მიზეზი</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>ფასდაკლება:</strong> @discount.Title</p>
+                                        <div class="mb-3">
+                                            <label for="reason-@discount.Id" class="form-label">მიზეზი *</label>
+                                            <textarea name="reason" id="reason-@discount.Id" class="form-control" 
+                                                      rows="4" required 
+                                                      placeholder="მიუთითეთ უარყოფის დეტალური მიზეზი..."></textarea>
+                                        </div>
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            ეს მიზეზი გაეგზავნება მერჩანტს და ის შეძლებს ფასდაკლების შეცვლას და თავიდან გაგზავნას.
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">გაუქმება</button>
+                                        <button type="submit" class="btn btn-danger">უარყოფა</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

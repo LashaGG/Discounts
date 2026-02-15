@@ -1,0 +1,125 @@
+@model IEnumerable<CategoryDto>
+@{
+    ViewData["Title"] = "კატეგორიების მართვა";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-list"></i> კატეგორიების მართვა</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="CreateCategory" class="btn btn-primary me-2">
+                <i class="fas fa-plus"></i> ახალი კატეგორია
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Icon</th>
+                            <th>სახელი</th>
+                            <th>აღწერა</th>
+                            <th>ფასდაკლებები</th>
+                            <th>სტატუსი</th>
+                            <th>შექმნის თარიღი</th>
+                            <th>მოქმედებები</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model)
+                        {
+                            <tr>
+                                <td>@category.Id</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(category.IconClass))
+                                    {
+                                        <i class="@category.IconClass fa-2x"></i>
+                                    }
+                                </td>
+                                <td><strong>@category.Name</strong></td>
+                                <td>@(category.Description ?? "-")</td>
+                                <td>
+                                    <span class="badge bg-info">@category.DiscountsCount</span>
+                                </td>
+                                <td>
+                                    @if (category.IsActive)
+                                    {
+                                        <span class="badge bg-success">აქტიური</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">არააქტიური</span>
+                                    }
+                                </td>
+                                <td>@category.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="EditCategory" asp-route-id="@category.Id" 
+                                           class="btn btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+
+                                        <form asp-action="ToggleCategoryStatus" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@category.Id" />
+                                            <button type="submit" class="btn @(category.IsActive ? "btn-secondary" : "btn-success")">
+                                                <i class="fas fa-@(category.IsActive ? "toggle-off" : "toggle-on")"></i>
+                                            </button>
+                                        </form>
+
+                                        @if (category.DiscountsCount == 0)
+                                        {
+                                            <form asp-action="DeleteCategory" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@category.Id" />
+                                                <button type="submit" class="btn btn-danger" 
+                                                        onclick="return confirm('ნამდვილად გსურთ წაშლა?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-danger" disabled 
+                                                    title="კატეგორია შეიცავს ფასდაკლებებს">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info mt-3">
+        <i class="fas fa-info-circle"></i>
+        <strong>შენიშვნა:</strong> კატეგორიის წაშლა შესაძლებელია მხოლოდ მაშინ, როცა მასში არ არის ფასდაკლებები.
+    </div>
+</div>

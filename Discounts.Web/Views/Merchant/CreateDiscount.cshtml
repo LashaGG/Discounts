@@ -1,0 +1,127 @@
+@model CreateDiscountDto
+@{
+    ViewData["Title"] = "შექმენით ახალი ფასდაკლება";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-plus-circle"></i> ახალი ფასდაკლების შექმნა</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateDiscount" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">სათაური *</label>
+                            <input asp-for="Title" class="form-control" placeholder="მაგ: 50% ფასდაკლება ყველა პროდუქტზე" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">აღწერა *</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" 
+                                      placeholder="დეტალურად აღწერეთ ფასდაკლება..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CategoryId" class="form-label">კატეგორია *</label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.Categories">
+                                <option value="">აირჩიეთ კატეგორია</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="OriginalPrice" class="form-label">ორიგინალური ფასი *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₾</span>
+                                    <input asp-for="OriginalPrice" type="number" step="0.01" class="form-control" />
+                                </div>
+                                <span asp-validation-for="OriginalPrice" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DiscountedPrice" class="form-label">ფასდაკლებული ფასი *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₾</span>
+                                    <input asp-for="DiscountedPrice" type="number" step="0.01" class="form-control" />
+                                </div>
+                                <span asp-validation-for="DiscountedPrice" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TotalCoupons" class="form-label">კუპონების რაოდენობა *</label>
+                            <input asp-for="TotalCoupons" type="number" min="1" class="form-control" 
+                                   placeholder="მაგ: 100" />
+                            <span asp-validation-for="TotalCoupons" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                ეს არის მაქსიმალური კუპონების რაოდენობა რაც შეიძლება გაიყიდოს
+                            </small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ValidFrom" class="form-label">მოქმედების დაწყება *</label>
+                                <input asp-for="ValidFrom" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="ValidFrom" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ValidTo" class="form-label">მოქმედების დასრულება *</label>
+                                <input asp-for="ValidTo" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="ValidTo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ImageUrl" class="form-label">სურათის URL</label>
+                            <input asp-for="ImageUrl" class="form-control" 
+                                   placeholder="https://example.com/image.jpg" />
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                შეიყვანეთ სურათის ბმული (optional)
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>შენიშვნა:</strong> შექმნის შემდეგ ფასდაკლება გაიგზავნება ადმინისტრატორის 
+                            დასამტკიცებლად. დამტკიცების შემდეგ ის გახდება ხელმისაწვდომი მომხმარებლებისთვის.
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="MyDiscounts" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> გაუქმება
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> შექმნა
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Calculate discount percentage
+        $('#DiscountedPrice, #OriginalPrice').on('input', function() {
+            var original = parseFloat($('#OriginalPrice').val()) || 0;
+            var discounted = parseFloat($('#DiscountedPrice').val()) || 0;
+            
+            if (original > 0 && discounted < original) {
+                var percentage = ((original - discounted) / original * 100).toFixed(2);
+                $('#discountPercentage').text(percentage + '% ფასდაკლება');
+            }
+        });
+    </script>
+}

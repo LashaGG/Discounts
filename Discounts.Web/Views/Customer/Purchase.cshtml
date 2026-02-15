@@ -1,0 +1,175 @@
+@model DiscountDto
+@{
+    ViewData["Title"] = L["Purchase_Title"].Value;
+    var expiresAt = TempData["ExpiresAt"] as DateTime?;
+    var reservationMinutes = TempData["ReservationMinutes"] as int? ?? 30;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-shopping-cart"></i> @L["Purchase_Title"]</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> @TempData["Success"]
+                            @if (expiresAt.HasValue)
+                            {
+                                <p class="mb-0 mt-2">
+                                    <strong>@string.Format(L["Purchase_CompleteIn"].Value, reservationMinutes)</strong><br />
+                                    <small>@L["Purchase_Deadline"] @expiresAt.Value.ToLocalTime().ToString("HH:mm:ss")</small>
+                                </p>
+                            }
+                        </div>
+                    }
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            @TempData["Error"]
+                        </div>
+                    }
+
+                    <!-- Discount Details -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Title">
+                            }
+                            else
+                            {
+                                <div class="bg-light text-center py-5 rounded">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-8">
+                            <h5>@Model.Title</h5>
+                            <p class="text-muted">@Model.MerchantName</p>
+                            <p>@Model.Description</p>
+                            
+                            <div class="border-top pt-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="mb-1"><small class="text-muted">@L["Purchase_OriginalPrice"]</small></p>
+                                        <h5><del>@Model.OriginalPrice.ToString("C")</del></h5>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="mb-1"><small class="text-muted">@L["Purchase_YouSave"]</small></p>
+                                        <h5 class="text-success">
+                                            @((Model.OriginalPrice - Model.DiscountedPrice).ToString("C"))
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <!-- Payment Summary -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="mb-3">@L["Purchase_PaymentDetails"]</h5>
+                            <table class="table">
+                                <tr>
+                                    <td>@L["Purchase_CouponPrice"]</td>
+                                    <td class="text-end"><strong>@Model.DiscountedPrice.ToString("C")</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>@L["Purchase_DiscountLabel"]</td>
+                                    <td class="text-end text-success">
+                                        <strong>-@Model.DiscountPercentage%</strong>
+                                    </td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td><strong>@L["Purchase_Total"]</strong></td>
+                                    <td class="text-end">
+                                        <h4 class="mb-0">@Model.DiscountedPrice.ToString("C")</h4>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method (Simulated) -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="mb-3">@L["Purchase_PaymentMethod"]</h5>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>@L["Purchase_SimulationNote"]</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a asp-action="Details" asp-route-id="@Model.Id" 
+                               class="btn btn-secondary w-100">
+                                <i class="fas fa-times"></i> @L["Common_Cancel"]
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <form asp-action="CompletePurchase" method="post">
+                                <input type="hidden" name="discountId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-success btn-lg w-100">
+                                    <i class="fas fa-check-circle"></i> @L["Purchase_PayAndBuy"]
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <p class="small text-muted text-center">
+                                @L["Purchase_AfterNote"]
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terms -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6><i class="fas fa-shield-alt"></i> @L["Purchase_SecurityTitle"]</h6>
+                    <ul class="small mb-0">
+                        <li>@L["Purchase_Rule1"]</li>
+                        <li>კუპონის ვადა: @Model.ValidFrom.ToString("dd/MM/yyyy") - @Model.ValidTo.ToString("dd/MM/yyyy")</li>
+                        <li>@L["Purchase_Rule3"]</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @if (expiresAt.HasValue)
+    {
+        <script>
+            // Countdown timer
+            var countDownDate = new Date("@expiresAt.Value.ToString("o")").getTime();
+
+            var x = setInterval(function() {
+                var now = new Date().getTime();
+                var distance = countDownDate - now;
+
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                if (distance < 0) {
+                    clearInterval(x);
+                    location.reload();
+                }
+            }, 1000);
+        </script>
+    }
+}

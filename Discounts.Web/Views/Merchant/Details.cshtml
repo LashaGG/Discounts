@@ -1,0 +1,197 @@
+@model DiscountDto
+@{
+    ViewData["Title"] = "ფასდაკლების დეტალები";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>@Model.Title</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="MyDiscounts" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> უკან
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" class="card-img-top" alt="@Model.Title">
+                }
+                
+                <div class="card-body">
+                    <div class="mb-3">
+                        <span class="badge bg-@GetStatusColor(Model.Status) fs-6">
+                            @GetStatusText(Model.Status)
+                        </span>
+                        <span class="badge bg-info fs-6">@Model.CategoryName</span>
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-check-circle"></i> აქტიური
+                            </span>
+                        }
+                        @if (Model.IsExpired)
+                        {
+                            <span class="badge bg-secondary fs-6">
+                                <i class="fas fa-clock"></i> ვადაგასული
+                            </span>
+                        }
+                    </div>
+
+                    <h4 class="mb-3">აღწერა</h4>
+                    <p class="lead">@Model.Description</p>
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>ფასი</h5>
+                            <p>
+                                <del class="text-muted">@Model.OriginalPrice.ToString("C")</del>
+                                <br />
+                                <span class="fs-3 text-success fw-bold">@Model.DiscountedPrice.ToString("C")</span>
+                                <br />
+                                <span class="badge bg-danger">-@Model.DiscountPercentage% ფასდაკლება</span>
+                            </p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5>ხელმისაწვდომობა</h5>
+                            <div class="progress mb-2" style="height: 30px;">
+                                @{
+                                    var percentage = Model.TotalCoupons > 0 
+                                        ? (Model.AvailableCoupons * 100.0 / Model.TotalCoupons) 
+                                        : 0;
+                                }
+                                <div class="progress-bar @(percentage > 50 ? "bg-success" : percentage > 20 ? "bg-warning" : "bg-danger")" 
+                                     style="width: @percentage%">
+                                    @Model.AvailableCoupons / @Model.TotalCoupons
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                <i class="fas fa-shopping-cart"></i> გაყიდულია: @Model.SoldCoupons კუპონი
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-calendar-check"></i> მოქმედების დაწყება</h6>
+                            <p>@Model.ValidFrom.ToString("dd MMMM yyyy, HH:mm")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-calendar-times"></i> მოქმედების დასრულება</h6>
+                            <p>@Model.ValidTo.ToString("dd MMMM yyyy, HH:mm")</p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <p class="text-muted">
+                        <small>
+                            <i class="fas fa-clock"></i> შეიქმნა: @Model.CreatedAt.ToString("dd MMMM yyyy, HH:mm")
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>მოქმედებები</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        @if (Model.Status == DiscountStatus.Pending || Model.Status == DiscountStatus.Rejected)
+                        {
+                            <a asp-action="EditDiscount" asp-route-id="@Model.Id" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> რედაქტირება
+                            </a>
+                        }
+
+                        @if (Model.SoldCoupons > 0)
+                        {
+                            <a asp-action="SalesHistory" asp-route-id="@Model.Id" class="btn btn-success">
+                                <i class="fas fa-chart-line"></i> გაყიდვების ისტორია
+                            </a>
+                        }
+
+                        @if (Model.SoldCoupons == 0)
+                        {
+                            <form asp-action="Delete" method="post" onsubmit="return confirm('დარწმუნებული ხართ?')">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="fas fa-trash"></i> წაშლა
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5>სტატისტიკა</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>სულ კუპონები:</span>
+                            <strong>@Model.TotalCoupons</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>ხელმისაწვდომი:</span>
+                            <strong class="text-success">@Model.AvailableCoupons</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>გაყიდული:</span>
+                            <strong class="text-primary">@Model.SoldCoupons</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>შემოსავალი:</span>
+                            <strong class="text-success">@((Model.DiscountedPrice * Model.SoldCoupons).ToString("C"))</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private static string GetStatusColor(DiscountStatus status)
+    {
+        return status switch
+        {
+            DiscountStatus.Pending => "warning",
+            DiscountStatus.Approved => "info",
+            DiscountStatus.Active => "success",
+            DiscountStatus.Rejected => "danger",
+            DiscountStatus.Expired => "secondary",
+            DiscountStatus.Suspended => "dark",
+            _ => "secondary"
+        };
+    }
+
+    private static string GetStatusText(DiscountStatus status)
+    {
+        return status switch
+        {
+            DiscountStatus.Pending => "მოლოდინში",
+            DiscountStatus.Approved => "დამტკიცებული",
+            DiscountStatus.Active => "აქტიური",
+            DiscountStatus.Rejected => "უარყოფილი",
+            DiscountStatus.Expired => "ვადაგასული",
+            DiscountStatus.Suspended => "შეჩერებული",
+            _ => status.ToString()
+        };
+    }
+}

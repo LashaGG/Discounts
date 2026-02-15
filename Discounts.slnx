@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/core/">
     <Project Path="Discounts.Application/Discounts.Application.csproj" />
@@ -15,5 +18,4 @@
   <Folder Name="/tests/">
     <Project Path="Discounts.Tests/Discounts.Tests.csproj" />
   </Folder>
-  <Folder Name="/src/NewFolder1/" />
 </Solution>

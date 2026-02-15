@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute name="xml:space" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- ==================== CATEGORY ==================== -->
+  <data name="Validation_CategoryIdRequired" xml:space="preserve"><value>კატეგორიის ID აუცილებელია</value></data>
+  <data name="Validation_CategoryRequired" xml:space="preserve"><value>კატეგორია აუცილებელია</value></data>
+  <data name="Validation_NameRequired" xml:space="preserve"><value>სახელი აუცილებელია</value></data>
+  <data name="Validation_NameMaxLength" xml:space="preserve"><value>სახელი არ უნდა აღემატებოდეს 100 სიმბოლოს</value></data>
+  <data name="Validation_DescriptionMaxLength500" xml:space="preserve"><value>აღწერა არ უნდა აღემატებოდეს 500 სიმბოლოს</value></data>
+  <data name="Validation_IconClassMaxLength" xml:space="preserve"><value>Icon class არ უნდა აღემატებოდეს 50 სიმბოლოს</value></data>
+
+  <!-- ==================== DISCOUNT ==================== -->
+  <data name="Validation_DiscountIdRequired" xml:space="preserve"><value>ფასდაკლების ID აუცილებელია</value></data>
+  <data name="Validation_TitleRequired" xml:space="preserve"><value>სათაური აუცილებელია</value></data>
+  <data name="Validation_TitleMaxLength" xml:space="preserve"><value>სათაური არ უნდა აღემატებოდეს 200 სიმბოლოს</value></data>
+  <data name="Validation_DescriptionRequired" xml:space="preserve"><value>აღწერა აუცილებელია</value></data>
+  <data name="Validation_DescriptionMaxLength2000" xml:space="preserve"><value>აღწერა არ უნდა აღემატებოდეს 2000 სიმბოლოს</value></data>
+  <data name="Validation_OriginalPriceGreaterThanZero" xml:space="preserve"><value>ორიგინალური ფასი უნდა იყოს 0-ზე მეტი</value></data>
+  <data name="Validation_PriceMaxLimit" xml:space="preserve"><value>ფასი არ უნდა აღემატებოდეს 1,000,000-ს</value></data>
+  <data name="Validation_DiscountedPriceGreaterThanZero" xml:space="preserve"><value>ფასდაკლებული ფასი უნდა იყოს 0-ზე მეტი</value></data>
+  <data name="Validation_DiscountedPriceLessThanOriginal" xml:space="preserve"><value>ფასდაკლებული ფასი უნდა იყოს ნაკლები ორიგინალურ ფასზე</value></data>
+  <data name="Validation_CouponCountRange" xml:space="preserve"><value>კუპონების რაოდენობა უნდა იყოს 1-დან 100,000-მდე</value></data>
+  <data name="Validation_StartDateRequired" xml:space="preserve"><value>დაწყების თარიღი აუცილებელია</value></data>
+  <data name="Validation_StartDateNotInPast" xml:space="preserve"><value>დაწყების თარიღი არ შეიძლება იყოს წარსულში</value></data>
+  <data name="Validation_EndDateRequired" xml:space="preserve"><value>დასრულების თარიღი აუცილებელია</value></data>
+  <data name="Validation_EndDateAfterStartDate" xml:space="preserve"><value>დასრულების თარიღი უნდა იყოს დაწყების თარიღზე გვიან</value></data>
+  <data name="Validation_UrlMaxLength" xml:space="preserve"><value>URL არ უნდა აღემატებოდეს 500 სიმბოლოს</value></data>
+  <data name="Validation_InvalidUrlFormat" xml:space="preserve"><value>არასწორი URL ფორმატი</value></data>
+
+  <!-- ==================== AUTH ==================== -->
+  <data name="Validation_EmailRequired" xml:space="preserve"><value>ელ-ფოსტა აუცილებელია</value></data>
+  <data name="Validation_EmailInvalidFormat" xml:space="preserve"><value>ელ-ფოსტის ფორმატი არასწორია</value></data>
+  <data name="Validation_PasswordRequired" xml:space="preserve"><value>პაროლი აუცილებელია</value></data>
+  <data name="Validation_PasswordMinLength" xml:space="preserve"><value>პაროლი მინიმუმ 8 სიმბოლო უნდა იყოს</value></data>
+  <data name="Validation_PasswordRequiresUppercase" xml:space="preserve"><value>პაროლი უნდა შეიცავდეს მინიმუმ ერთ დიდ ასოს</value></data>
+  <data name="Validation_PasswordRequiresLowercase" xml:space="preserve"><value>პაროლი უნდა შეიცავდეს მინიმუმ ერთ პატარა ასოს</value></data>
+  <data name="Validation_PasswordRequiresDigit" xml:space="preserve"><value>პაროლი უნდა შეიცავდეს მინიმუმ ერთ ციფრს</value></data>
+  <data name="Validation_PasswordRequiresSpecialChar" xml:space="preserve"><value>პაროლი უნდა შეიცავდეს მინიმუმ ერთ სპეციალურ სიმბოლოს</value></data>
+  <data name="Validation_PasswordsDoNotMatch" xml:space="preserve"><value>პაროლები არ ემთხვევა</value></data>
+  <data name="Validation_FirstNameRequired" xml:space="preserve"><value>სახელი აუცილებელია</value></data>
+  <data name="Validation_FirstNameMaxLength" xml:space="preserve"><value>სახელი არ უნდა აღემატებოდეს 100 სიმბოლოს</value></data>
+  <data name="Validation_LastNameRequired" xml:space="preserve"><value>გვარი აუცილებელია</value></data>
+  <data name="Validation_LastNameMaxLength" xml:space="preserve"><value>გვარი არ უნდა აღემატებოდეს 100 სიმბოლოს</value></data>
+  <data name="Validation_RoleRequired" xml:space="preserve"><value>როლი აუცილებელია</value></data>
+  <data name="Validation_RoleMustBeMerchantOrCustomer" xml:space="preserve"><value>როლი უნდა იყოს Merchant ან Customer</value></data>
+  <data name="Validation_CompanyNameRequiredForMerchant" xml:space="preserve"><value>კომპანიის სახელი აუცილებელია მერჩანტისთვის</value></data>
+
+  <!-- ==================== TOKEN ==================== -->
+  <data name="Validation_TokenRequired" xml:space="preserve"><value>ტოკენი აუცილებელია</value></data>
+  <data name="Validation_RefreshTokenRequired" xml:space="preserve"><value>Refresh ტოკენი აუცილებელია</value></data>
+</root>

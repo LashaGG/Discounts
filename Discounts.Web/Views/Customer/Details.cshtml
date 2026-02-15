@@ -1,0 +1,184 @@
+@model DiscountDto
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-12">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> @L["Common_Back"]
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Image Section -->
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" class="img-fluid rounded shadow" alt="@Model.Title">
+            }
+            else
+            {
+                <div class="bg-light text-center py-5 rounded">
+                    <i class="fas fa-image fa-5x text-muted"></i>
+                </div>
+            }
+        </div>
+
+        <!-- Details Section -->
+        <div class="col-md-6">
+            <span class="badge bg-@Model.CategoryName fs-6 mb-2">
+                <i class="fas fa-tag"></i> @Model.CategoryName
+            </span>
+            
+            <h1 class="mb-3">@Model.Title</h1>
+            
+            <p class="text-muted mb-3">
+                <i class="fas fa-building"></i> <strong>@Model.MerchantName</strong>
+            </p>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="mb-1"><small class="text-muted">@L["Details_OriginalPrice"]</small></p>
+                            <h4><del>@Model.OriginalPrice.ToString("C")</del></h4>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-1"><small class="text-muted">@L["Details_DiscountedPrice"]</small></p>
+                            <h2 class="text-success mb-0">@Model.DiscountedPrice.ToString("C")</h2>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="text-center">
+                        <span class="badge bg-danger fs-4">
+                            -@Model.DiscountPercentage% @L["Details_DiscountLabel"]
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6><i class="fas fa-ticket-alt"></i> @L["Details_Availability"]</h6>
+                    <div class="progress mb-2" style="height: 25px;">
+                        @{
+                            var percentSold = Model.TotalCoupons > 0 
+                                ? (Model.SoldCoupons * 100.0 / Model.TotalCoupons) 
+                                : 0;
+                        }
+                        <div class="progress-bar @(Model.AvailableCoupons > 10 ? "bg-success" : "bg-warning")" 
+                             style="width: @((100 - percentSold))%">
+                            @Model.AvailableCoupons @L["Common_Remaining"]
+                        </div>
+                    </div>
+                    <p class="small mb-0">
+                        @L["Details_Sold"]: @Model.SoldCoupons / @Model.TotalCoupons
+                    </p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6><i class="fas fa-calendar-alt"></i> @L["Details_ValidityPeriod"]</h6>
+                    <p class="mb-0">
+                        <strong>@L["Details_From"]</strong> @Model.ValidFrom.ToString("dd/MM/yyyy")<br />
+                        <strong>@L["Details_To"]</strong> @Model.ValidTo.ToString("dd/MM/yyyy")
+                    </p>
+                </div>
+            </div>
+
+            @if (Model.AvailableCoupons > 0 && Model.Status == DiscountStatus.Active && !Model.IsExpired)
+            {
+                @if (User.IsInRole("Customer"))
+                {
+                    <div class="d-flex gap-2">
+                        <form asp-action="Reserve" method="post" class="flex-fill">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-outline-primary btn-lg w-100">
+                                <i class="fas fa-bookmark"></i> @L["Details_Reserve"]
+                            </button>
+                        </form>
+                        <a asp-action="Purchase" asp-route-discountId="@Model.Id"
+                           class="btn btn-primary btn-lg flex-fill">
+                            <i class="fas fa-shopping-cart"></i> @L["Details_Buy"]
+                        </a>
+                    </div>
+                }
+                else if (User.Identity?.IsAuthenticated != true)
+                {
+                    <a asp-controller="Account" asp-action="Login" 
+                       asp-route-returnUrl="@Url.Action("Details", new { id = Model.Id })"
+                       class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-sign-in-alt"></i> @L["Details_LoginAndBuy"]
+                    </a>
+                }
+            }
+            else if (Model.AvailableCoupons == 0)
+            {
+                <div class="text-center">
+                    <span class="badge bg-secondary fs-4 w-100 py-3">
+                        <i class="fas fa-times-circle"></i> @L["Details_SoldOut"]
+                    </span>
+                </div>
+            }
+            else if (Model.IsExpired)
+            {
+                <button type="button" class="btn btn-secondary btn-lg w-100" disabled>
+                    <i class="fas fa-clock"></i> @L["Details_Expired"]
+                </button>
+            }
+        </div>
+    </div>
+
+    <!-- Description Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle"></i> @L["Details_Description"]</h5>
+                </div>
+                <div class="card-body">
+                    <p>@Model.Description</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Section -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-file-contract"></i> @L["Details_TermsTitle"]</h5>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li>@L["Details_Term1"]</li>
+                        <li>@L["Details_Term2"]</li>
+                        <li>@L["Details_Term3"]</li>
+                        <li>@L["Details_Term4"]</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

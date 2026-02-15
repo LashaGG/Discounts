@@ -1,0 +1,176 @@
+@model IEnumerable<CouponDto>
+@{
+    ViewData["Title"] = L["Coupons_Title"].Value;
+    var filter = ViewBag.Filter as string;
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-ticket-alt"></i> @L["Coupons_Title"]</h2>
+            <p class="text-muted">@L["Coupons_Subtitle"]</p>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link @(string.IsNullOrEmpty(filter) ? "active" : "")" 
+                       asp-action="MyCoupons">
+                        <i class="fas fa-th"></i> @L["Common_All"]
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(filter == "active" ? "active" : "")" 
+                       asp-action="MyCoupons" asp-route-filter="active">
+                        <i class="fas fa-check-circle"></i> @L["Common_Active"]
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(filter == "used" ? "active" : "")" 
+                       asp-action="MyCoupons" asp-route-filter="used">
+                        <i class="fas fa-check-double"></i> @L["Coupons_Used"]
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(filter == "expired" ? "active" : "")" 
+                       asp-action="MyCoupons" asp-route-filter="expired">
+                        <i class="fas fa-clock"></i> @L["Coupons_Expired"]
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Coupons Grid -->
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> 
+            @if (string.IsNullOrEmpty(filter))
+            {
+                <text>@L["Coupons_NoCoupons"]</text>
+            }
+            else if (filter == "active")
+            {
+                <text>@L["Coupons_NoActive"]</text>
+            }
+            else if (filter == "used")
+            {
+                <text>@L["Coupons_NoUsed"]</text>
+            }
+            else if (filter == "expired")
+            {
+                <text>@L["Coupons_NoExpired"]</text>
+            }
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-action="Index" class="btn btn-primary btn-lg">
+                <i class="fas fa-tags"></i> @L["Common_ViewDiscounts"]
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var coupon in Model)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm @(coupon.IsExpired ? "opacity-75" : "")">
+                        @if (!string.IsNullOrEmpty(coupon.DiscountImageUrl))
+                        {
+                            <img src="@coupon.DiscountImageUrl" class="card-img-top" alt="@coupon.DiscountTitle" 
+                                 style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="bg-light text-center py-5" style="height: 200px;">
+                                <i class="fas fa-ticket-alt fa-3x text-muted"></i>
+                            </div>
+                        }
+                        
+                        <div class="card-body">
+                            <span class="badge bg-@coupon.StatusColor mb-2">
+                                @coupon.StatusText
+                            </span>
+                            
+                            <h5 class="card-title">@coupon.DiscountTitle</h5>
+                            <p class="card-text text-muted small">
+                                <i class="fas fa-building"></i> @coupon.MerchantName<br />
+                                <i class="fas fa-tag"></i> @coupon.CategoryName
+                            </p>
+
+                            <div class="coupon-code-display p-2 bg-light rounded text-center mb-3">
+                                <small class="text-muted d-block">@L["Coupons_Code"]</small>
+                                <strong class="font-monospace fs-5">@coupon.Code</strong>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">@L["Coupons_Paid"]</span>
+                                <strong>@coupon.DiscountedPrice.ToString("C")</strong>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">@L["Coupons_Savings"]</span>
+                                <span class="text-success">
+                                    <strong>@((coupon.OriginalPrice - coupon.DiscountedPrice).ToString("C"))</strong>
+                                </span>
+                            </div>
+
+                            @if (coupon.PurchasedAt.HasValue)
+                            {
+                                <p class="small text-muted mb-2">
+                                    <i class="fas fa-calendar"></i> @L["Coupons_PurchasedOn"] @coupon.PurchasedAt.Value.ToString("dd/MM/yyyy")
+                                </p>
+                            }
+
+                            @if (coupon.UsedAt.HasValue)
+                            {
+                                <p class="small text-muted mb-2">
+                                    <i class="fas fa-check"></i> @L["Coupons_UsedOn"] @coupon.UsedAt.Value.ToString("dd/MM/yyyy")
+                                </p>
+                            }
+
+                            <p class="small mb-3">
+                                <i class="fas fa-clock"></i> @L["Coupons_Validity"]
+                                @coupon.ValidFrom.ToString("dd/MM") - @coupon.ValidTo.ToString("dd/MM/yyyy")
+                            </p>
+
+                            <a asp-action="CouponDetails" asp-route-id="@coupon.Id" 
+                               class="btn btn-primary w-100">
+                                <i class="fas fa-info-circle"></i> @L["Common_Details"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .coupon-code-display {
+            border: 2px dashed #007bff;
+        }
+    </style>
+}

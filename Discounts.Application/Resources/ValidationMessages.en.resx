@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute name="xml:space" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- ==================== CATEGORY ==================== -->
+  <data name="Validation_CategoryIdRequired" xml:space="preserve"><value>Category ID is required</value></data>
+  <data name="Validation_CategoryRequired" xml:space="preserve"><value>Category is required</value></data>
+  <data name="Validation_NameRequired" xml:space="preserve"><value>Name is required</value></data>
+  <data name="Validation_NameMaxLength" xml:space="preserve"><value>Name must not exceed 100 characters</value></data>
+  <data name="Validation_DescriptionMaxLength500" xml:space="preserve"><value>Description must not exceed 500 characters</value></data>
+  <data name="Validation_IconClassMaxLength" xml:space="preserve"><value>Icon class must not exceed 50 characters</value></data>
+
+  <!-- ==================== DISCOUNT ==================== -->
+  <data name="Validation_DiscountIdRequired" xml:space="preserve"><value>Discount ID is required</value></data>
+  <data name="Validation_TitleRequired" xml:space="preserve"><value>Title is required</value></data>
+  <data name="Validation_TitleMaxLength" xml:space="preserve"><value>Title must not exceed 200 characters</value></data>
+  <data name="Validation_DescriptionRequired" xml:space="preserve"><value>Description is required</value></data>
+  <data name="Validation_DescriptionMaxLength2000" xml:space="preserve"><value>Description must not exceed 2000 characters</value></data>
+  <data name="Validation_OriginalPriceGreaterThanZero" xml:space="preserve"><value>Original price must be greater than 0</value></data>
+  <data name="Validation_PriceMaxLimit" xml:space="preserve"><value>Price must not exceed 1,000,000</value></data>
+  <data name="Validation_DiscountedPriceGreaterThanZero" xml:space="preserve"><value>Discounted price must be greater than 0</value></data>
+  <data name="Validation_DiscountedPriceLessThanOriginal" xml:space="preserve"><value>Discounted price must be less than original price</value></data>
+  <data name="Validation_CouponCountRange" xml:space="preserve"><value>Coupon count must be between 1 and 100,000</value></data>
+  <data name="Validation_StartDateRequired" xml:space="preserve"><value>Start date is required</value></data>
+  <data name="Validation_StartDateNotInPast" xml:space="preserve"><value>Start date cannot be in the past</value></data>
+  <data name="Validation_EndDateRequired" xml:space="preserve"><value>End date is required</value></data>
+  <data name="Validation_EndDateAfterStartDate" xml:space="preserve"><value>End date must be after start date</value></data>
+  <data name="Validation_UrlMaxLength" xml:space="preserve"><value>URL must not exceed 500 characters</value></data>
+  <data name="Validation_InvalidUrlFormat" xml:space="preserve"><value>Invalid URL format</value></data>
+
+  <!-- ==================== AUTH ==================== -->
+  <data name="Validation_EmailRequired" xml:space="preserve"><value>Email is required</value></data>
+  <data name="Validation_EmailInvalidFormat" xml:space="preserve"><value>Email format is invalid</value></data>
+  <data name="Validation_PasswordRequired" xml:space="preserve"><value>Password is required</value></data>
+  <data name="Validation_PasswordMinLength" xml:space="preserve"><value>Password must be at least 8 characters</value></data>
+  <data name="Validation_PasswordRequiresUppercase" xml:space="preserve"><value>Password must contain at least one uppercase letter</value></data>
+  <data name="Validation_PasswordRequiresLowercase" xml:space="preserve"><value>Password must contain at least one lowercase letter</value></data>
+  <data name="Validation_PasswordRequiresDigit" xml:space="preserve"><value>Password must contain at least one digit</value></data>
+  <data name="Validation_PasswordRequiresSpecialChar" xml:space="preserve"><value>Password must contain at least one special character</value></data>
+  <data name="Validation_PasswordsDoNotMatch" xml:space="preserve"><value>Passwords do not match</value></data>
+  <data name="Validation_FirstNameRequired" xml:space="preserve"><value>First name is required</value></data>
+  <data name="Validation_FirstNameMaxLength" xml:space="preserve"><value>First name must not exceed 100 characters</value></data>
+  <data name="Validation_LastNameRequired" xml:space="preserve"><value>Last name is required</value></data>
+  <data name="Validation_LastNameMaxLength" xml:space="preserve"><value>Last name must not exceed 100 characters</value></data>
+  <data name="Validation_RoleRequired" xml:space="preserve"><value>Role is required</value></data>
+  <data name="Validation_RoleMustBeMerchantOrCustomer" xml:space="preserve"><value>Role must be Merchant or Customer</value></data>
+  <data name="Validation_CompanyNameRequiredForMerchant" xml:space="preserve"><value>Company name is required for merchants</value></data>
+
+  <!-- ==================== TOKEN ==================== -->
+  <data name="Validation_TokenRequired" xml:space="preserve"><value>Token is required</value></data>
+  <data name="Validation_RefreshTokenRequired" xml:space="preserve"><value>Refresh token is required</value></data>
+</root>

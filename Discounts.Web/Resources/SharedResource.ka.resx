@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute name="xml:space" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- ==================== NAVIGATION / LAYOUT ==================== -->
+  <data name="Nav_Discounts" xml:space="preserve"><value>ფასდაკლებები</value></data>
+  <data name="Nav_MyCoupons" xml:space="preserve"><value>ჩემი კუპონები</value></data>
+  <data name="Nav_Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Nav_MyDiscounts" xml:space="preserve"><value>ჩემი ფასდაკლებები</value></data>
+  <data name="Nav_New" xml:space="preserve"><value>ახალი</value></data>
+  <data name="Nav_Administration" xml:space="preserve"><value>ადმინისტრირება</value></data>
+  <data name="Nav_Moderation" xml:space="preserve"><value>მოდერაცია</value></data>
+  <data name="Nav_Users" xml:space="preserve"><value>მომხმარებლები</value></data>
+  <data name="Nav_Categories" xml:space="preserve"><value>კატეგორიები</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>პარამეტრები</value></data>
+  <data name="Nav_MyPanel" xml:space="preserve"><value>ჩემი პანელი</value></data>
+  <data name="Nav_Logout" xml:space="preserve"><value>გამოსვლა</value></data>
+  <data name="Nav_Login" xml:space="preserve"><value>შესვლა</value></data>
+  <data name="Nav_Register" xml:space="preserve"><value>რეგისტრაცია</value></data>
+  <data name="Nav_Privacy" xml:space="preserve"><value>კონფიდენციალურობა</value></data>
+  <data name="Nav_Language" xml:space="preserve"><value>ენა</value></data>
+
+  <!-- ==================== COMMON ==================== -->
+  <data name="Common_Back" xml:space="preserve"><value>უკან</value></data>
+  <data name="Common_Search" xml:space="preserve"><value>ძიება</value></data>
+  <data name="Common_All" xml:space="preserve"><value>ყველა</value></data>
+  <data name="Common_Filter" xml:space="preserve"><value>ფილტრი</value></data>
+  <data name="Common_Clear" xml:space="preserve"><value>გასუფთავება</value></data>
+  <data name="Common_Save" xml:space="preserve"><value>შენახვა</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>გაუქმება</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>წაშლა</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>რედაქტირება</value></data>
+  <data name="Common_Details" xml:space="preserve"><value>დეტალები</value></data>
+  <data name="Common_Create" xml:space="preserve"><value>შექმნა</value></data>
+  <data name="Common_Actions" xml:space="preserve"><value>მოქმედებები</value></data>
+  <data name="Common_Active" xml:space="preserve"><value>აქტიური</value></data>
+  <data name="Common_Inactive" xml:space="preserve"><value>არააქტიური</value></data>
+  <data name="Common_Status" xml:space="preserve"><value>სტატუსი</value></data>
+  <data name="Common_Date" xml:space="preserve"><value>თარიღი</value></data>
+  <data name="Common_Price" xml:space="preserve"><value>ფასი</value></data>
+  <data name="Common_Discount" xml:space="preserve"><value>ფასდაკლება</value></data>
+  <data name="Common_Error" xml:space="preserve"><value>შეცდომა</value></data>
+  <data name="Common_Confirm" xml:space="preserve"><value>დარწმუნებული ხართ?</value></data>
+  <data name="Common_Category" xml:space="preserve"><value>კატეგორია</value></data>
+  <data name="Common_SortBy" xml:space="preserve"><value>სორტირება</value></data>
+  <data name="Common_MinPrice" xml:space="preserve"><value>მინ. ფასი</value></data>
+  <data name="Common_MaxPrice" xml:space="preserve"><value>მაქს. ფასი</value></data>
+  <data name="Common_MinDiscountPercent" xml:space="preserve"><value>მინ. % ფასდაკლება</value></data>
+  <data name="Common_Remaining" xml:space="preserve"><value>დარჩა</value></data>
+  <data name="Common_ViewDiscounts" xml:space="preserve"><value>ფასდაკლებების ნახვა</value></data>
+
+  <!-- ==================== BROWSE / CUSTOMER INDEX ==================== -->
+  <data name="Browse_Title" xml:space="preserve"><value>ფასდაკლებები</value></data>
+  <data name="Browse_Subtitle" xml:space="preserve"><value>იპოვეთ საუკეთესო შეთავაზებები</value></data>
+  <data name="Browse_HeroText" xml:space="preserve"><value>იპოვეთ საუკეთესო ფასდაკლებები და დაზოგეთ ყოველდღე</value></data>
+  <data name="Browse_SearchPlaceholder" xml:space="preserve"><value>ძიება...</value></data>
+  <data name="Browse_NoResults" xml:space="preserve"><value>ფასდაკლებები ვერ მოიძებნა</value></data>
+  <data name="Browse_TryOther" xml:space="preserve"><value>სცადეთ სხვა ძიება ან კატეგორია</value></data>
+
+  <!-- ==================== DISCOUNT DETAILS ==================== -->
+  <data name="Details_OriginalPrice" xml:space="preserve"><value>ორიგინალური ფასი</value></data>
+  <data name="Details_DiscountedPrice" xml:space="preserve"><value>ფასდაკლებული ფასი</value></data>
+  <data name="Details_Availability" xml:space="preserve"><value>ხელმისაწვდომობა</value></data>
+  <data name="Details_Sold" xml:space="preserve"><value>გაყიდული</value></data>
+  <data name="Details_ValidityPeriod" xml:space="preserve"><value>მოქმედების ვადა</value></data>
+  <data name="Details_From" xml:space="preserve"><value>დან:</value></data>
+  <data name="Details_To" xml:space="preserve"><value>მდე:</value></data>
+  <data name="Details_Reserve" xml:space="preserve"><value>დაჯავშნა</value></data>
+  <data name="Details_Buy" xml:space="preserve"><value>ყიდვა</value></data>
+  <data name="Details_LoginAndBuy" xml:space="preserve"><value>შესვლა და შეძენა</value></data>
+  <data name="Details_SoldOut" xml:space="preserve"><value>გაყიდულია</value></data>
+  <data name="Details_Expired" xml:space="preserve"><value>ვადა გასულია</value></data>
+  <data name="Details_Description" xml:space="preserve"><value>დეტალური აღწერა</value></data>
+  <data name="Details_TermsTitle" xml:space="preserve"><value>წესები და პირობები</value></data>
+  <data name="Details_Term1" xml:space="preserve"><value>კუპონი უნდა გამოიყენოთ მოქმედების ვადაში</value></data>
+  <data name="Details_Term2" xml:space="preserve"><value>კუპონი ვალიდურია მხოლოდ ერთი გამოყენებისთვის</value></data>
+  <data name="Details_Term3" xml:space="preserve"><value>შეძენილი კუპონი არ უბრუნდება და არ ცვლის</value></data>
+  <data name="Details_Term4" xml:space="preserve"><value>დაჯავშნილი კუპონი ავტომატურად გაუქმდება თუ არ გადაიხდით დროულად</value></data>
+  <data name="Details_DiscountLabel" xml:space="preserve"><value>ფასდაკლება</value></data>
+
+  <!-- ==================== MY COUPONS ==================== -->
+  <data name="Coupons_Title" xml:space="preserve"><value>ჩემი კუპონები</value></data>
+  <data name="Coupons_Subtitle" xml:space="preserve"><value>თქვენი შეძენილი და აქტიური კუპონები</value></data>
+  <data name="Coupons_Used" xml:space="preserve"><value>გამოყენებული</value></data>
+  <data name="Coupons_Expired" xml:space="preserve"><value>ვადაგასული</value></data>
+  <data name="Coupons_NoCoupons" xml:space="preserve"><value>თქვენ ჯერ არ გაქვთ შეძენილი კუპონები</value></data>
+  <data name="Coupons_NoActive" xml:space="preserve"><value>თქვენ არ გაქვთ აქტიური კუპონები</value></data>
+  <data name="Coupons_NoUsed" xml:space="preserve"><value>თქვენ არ გაქვთ გამოყენებული კუპონები</value></data>
+  <data name="Coupons_NoExpired" xml:space="preserve"><value>თქვენ არ გაქვთ ვადაგასული კუპონები</value></data>
+  <data name="Coupons_Code" xml:space="preserve"><value>კოდი</value></data>
+  <data name="Coupons_Paid" xml:space="preserve"><value>გადახდილი:</value></data>
+  <data name="Coupons_Savings" xml:space="preserve"><value>დაზოგვა:</value></data>
+  <data name="Coupons_PurchasedOn" xml:space="preserve"><value>შეძენილია:</value></data>
+  <data name="Coupons_UsedOn" xml:space="preserve"><value>გამოყენებულია:</value></data>
+  <data name="Coupons_Validity" xml:space="preserve"><value>ვადა:</value></data>
+
+  <!-- ==================== PURCHASE ==================== -->
+  <data name="Purchase_Title" xml:space="preserve"><value>კუპონის შეძენა</value></data>
+  <data name="Purchase_CompleteIn" xml:space="preserve"><value>გთხოვთ შეძენა დაასრულოთ {0} წუთში!</value></data>
+  <data name="Purchase_Deadline" xml:space="preserve"><value>ვადა:</value></data>
+  <data name="Purchase_OriginalPrice" xml:space="preserve"><value>ორიგინალური ფასი</value></data>
+  <data name="Purchase_YouSave" xml:space="preserve"><value>თქვენ დაზოგავთ</value></data>
+  <data name="Purchase_PaymentDetails" xml:space="preserve"><value>გადახდის დეტალები</value></data>
+  <data name="Purchase_CouponPrice" xml:space="preserve"><value>კუპონის ფასი:</value></data>
+  <data name="Purchase_DiscountLabel" xml:space="preserve"><value>ფასდაკლება:</value></data>
+  <data name="Purchase_Total" xml:space="preserve"><value>სულ გადასახდელი:</value></data>
+  <data name="Purchase_PaymentMethod" xml:space="preserve"><value>გადახდის მეთოდი</value></data>
+  <data name="Purchase_SimulationNote" xml:space="preserve"><value>სიმულაცია: რეალური გადახდის სისტემა ჯერ არ არის ინტეგრირებული. ღილაკზე დაჭერით დადასტურდება შეძენა.</value></data>
+  <data name="Purchase_PayAndBuy" xml:space="preserve"><value>გადახდა და შეძენა</value></data>
+  <data name="Purchase_AfterNote" xml:space="preserve"><value>შეძენის შემდეგ კუპონი გამოჩნდება "ჩემი კუპონები" გვერდზე</value></data>
+  <data name="Purchase_SecurityTitle" xml:space="preserve"><value>უსაფრთხოება და წესები</value></data>
+  <data name="Purchase_Rule1" xml:space="preserve"><value>კუპონი გამოიყენება მხოლოდ ერთხელ</value></data>
+  <data name="Purchase_Rule3" xml:space="preserve"><value>შეძენილი კუპონი არ უბრუნდება</value></data>
+
+  <!-- ==================== AUTH ==================== -->
+  <data name="Auth_Login" xml:space="preserve"><value>შესვლა</value></data>
+  <data name="Auth_Register" xml:space="preserve"><value>რეგისტრაცია</value></data>
+  <data name="Auth_Email" xml:space="preserve"><value>ელ. ფოსტა</value></data>
+  <data name="Auth_Password" xml:space="preserve"><value>პაროლი</value></data>
+  <data name="Auth_RememberMe" xml:space="preserve"><value>დამახსოვრება</value></data>
+  <data name="Auth_NoAccount" xml:space="preserve"><value>არ გაქვთ ანგარიში?</value></data>
+  <data name="Auth_Customer" xml:space="preserve"><value>მომხმარებელი</value></data>
+  <data name="Auth_Merchant" xml:space="preserve"><value>მერჩანტი</value></data>
+  <data name="Auth_MerchantRegistration" xml:space="preserve"><value>მერჩანტის რეგისტრაცია</value></data>
+  <data name="Auth_CustomerRegistration" xml:space="preserve"><value>მომხმარებლის რეგისტრაცია</value></data>
+  <data name="Auth_FirstName" xml:space="preserve"><value>სახელი</value></data>
+  <data name="Auth_LastName" xml:space="preserve"><value>გვარი</value></data>
+  <data name="Auth_CompanyName" xml:space="preserve"><value>კომპანიის სახელი</value></data>
+  <data name="Auth_CompanyDescription" xml:space="preserve"><value>კომპანიის აღწერა</value></data>
+  <data name="Auth_ConfirmPassword" xml:space="preserve"><value>პაროლის დადასტურება</value></data>
+  <data name="Auth_HaveAccount" xml:space="preserve"><value>უკვე გაქვთ ანგარიში?</value></data>
+  <data name="Auth_MinChars" xml:space="preserve"><value>მინ. 6 სიმბოლო</value></data>
+  <data name="Auth_AccessDenied" xml:space="preserve"><value>წვდომა აკრძალულია</value></data>
+  <data name="Auth_NoPermission" xml:space="preserve"><value>თქვენ არ გაქვთ ამ გვერდზე წვდომის უფლება.</value></data>
+  <data name="Auth_HomePage" xml:space="preserve"><value>მთავარი გვერდი</value></data>
+  <data name="Auth_CompanyPlaceholder" xml:space="preserve"><value>კომპანია</value></data>
+  <data name="Auth_CompanyDescPlaceholder" xml:space="preserve"><value>მოკლე აღწერა კომპანიის შესახებ...</value></data>
+  <data name="Auth_RepeatPassword" xml:space="preserve"><value>გაიმეორეთ პაროლი</value></data>
+
+  <!-- ==================== ADMIN ==================== -->
+  <data name="Admin_Dashboard" xml:space="preserve"><value>ადმინისტრატორის პანელი</value></data>
+  <data name="Admin_SystemCenter" xml:space="preserve"><value>სისტემის მართვის ცენტრი</value></data>
+  <data name="Admin_TotalUsers" xml:space="preserve"><value>სულ მომხმარებლები</value></data>
+  <data name="Admin_Including" xml:space="preserve"><value>მათ შორის:</value></data>
+  <data name="Admin_MerchantsCount" xml:space="preserve"><value>მერჩანტი</value></data>
+  <data name="Admin_CustomersCount" xml:space="preserve"><value>მყიდველი</value></data>
+  <data name="Admin_TotalDiscounts" xml:space="preserve"><value>ფასდაკლებები</value></data>
+  <data name="Admin_ActiveLabel" xml:space="preserve"><value>აქტიური:</value></data>
+  <data name="Admin_Pending" xml:space="preserve"><value>მოლოდინში</value></data>
+  <data name="Admin_Approve" xml:space="preserve"><value>დამტკიცება</value></data>
+  <data name="Admin_OrdersRevenue" xml:space="preserve"><value>შეკვეთები / შემოსავალი</value></data>
+  <data name="Admin_QuickActions" xml:space="preserve"><value>სწრაფი ქმედებები</value></data>
+  <data name="Admin_UserManagement" xml:space="preserve"><value>მომხმარებლების მართვა</value></data>
+  <data name="Admin_ModerationPending" xml:space="preserve"><value>მოდერაცია</value></data>
+  <data name="Admin_Administrators" xml:space="preserve"><value>ადმინისტრატორები</value></data>
+  <data name="Admin_Merchants" xml:space="preserve"><value>მერჩანტები</value></data>
+  <data name="Admin_Customers" xml:space="preserve"><value>მომხმარებლები</value></data>
+
+  <!-- Admin Messages -->
+  <data name="Admin_UserDeactivated" xml:space="preserve"><value>მომხმარებელი წარმატებით დეაქტივირდა</value></data>
+  <data name="Admin_UserDeactivateFailed" xml:space="preserve"><value>მომხმარებლის დეაქტივაცია ვერ მოხერხდა</value></data>
+  <data name="Admin_UserActivated" xml:space="preserve"><value>მომხმარებელი წარმატებით აქტივირდა</value></data>
+  <data name="Admin_UserActivateFailed" xml:space="preserve"><value>მომხმარებლის აქტივაცია ვერ მოხერხდა</value></data>
+  <data name="Admin_CannotDeleteSelf" xml:space="preserve"><value>თქვენ ვერ წაშლით საკუთარ თავს</value></data>
+  <data name="Admin_UserDeleted" xml:space="preserve"><value>მომხმარებელი წარმატებით წაიშალა</value></data>
+  <data name="Admin_UserDeleteFailed" xml:space="preserve"><value>მომხმარებლის წაშლა ვერ მოხერხდა</value></data>
+  <data name="Admin_RoleChanged" xml:space="preserve"><value>როლი წარმატებით შეიცვალა</value></data>
+  <data name="Admin_RoleChangeFailed" xml:space="preserve"><value>როლის შეცვლა ვერ მოხერხდა</value></data>
+  <data name="Admin_DiscountApproved" xml:space="preserve"><value>ფასდაკლება წარმატებით დამტკიცდა და გამოქვეყნდა</value></data>
+  <data name="Admin_DiscountApproveFailed" xml:space="preserve"><value>ფასდაკლების დამტკიცება ვერ მოხერხდა</value></data>
+  <data name="Admin_RejectReasonRequired" xml:space="preserve"><value>უარყოფის მიზეზის მითითება აუცილებელია</value></data>
+  <data name="Admin_DiscountRejected" xml:space="preserve"><value>ფასდაკლება უარყოფილია</value></data>
+  <data name="Admin_DiscountRejectFailed" xml:space="preserve"><value>ფასდაკლების უარყოფა ვერ მოხერხდა</value></data>
+  <data name="Admin_DiscountSuspended" xml:space="preserve"><value>ფასდაკლება შეჩერებულია</value></data>
+  <data name="Admin_DiscountSuspendFailed" xml:space="preserve"><value>ფასდაკლების შეჩერება ვერ მოხერხდა</value></data>
+  <data name="Admin_DiscountActivated" xml:space="preserve"><value>ფასდაკლება აქტივირდა</value></data>
+  <data name="Admin_DiscountActivateFailed" xml:space="preserve"><value>ფასდაკლების აქტივაცია ვერ მოხერხდა</value></data>
+  <data name="Admin_SettingsSaved" xml:space="preserve"><value>პარამეტრები წარმატებით შეინახა</value></data>
+  <data name="Admin_SettingsSaveFailed" xml:space="preserve"><value>პარამეტრების შენახვა ვერ მოხერხდა</value></data>
+  <data name="Admin_CategoryCreated" xml:space="preserve"><value>კატეგორია წარმატებით შეიქმნა</value></data>
+  <data name="Admin_CategoryUpdated" xml:space="preserve"><value>კატეგორია წარმატებით განახლდა</value></data>
+  <data name="Admin_CategoryUpdateFailed" xml:space="preserve"><value>კატეგორიის განახლება ვერ მოხერხდა</value></data>
+  <data name="Admin_CategoryDeleted" xml:space="preserve"><value>კატეგორია წარმატებით წაიშალა</value></data>
+  <data name="Admin_CategoryDeleteFailed" xml:space="preserve"><value>კატეგორიის წაშლა ვერ მოხერხდა</value></data>
+  <data name="Admin_CategoryStatusChanged" xml:space="preserve"><value>კატეგორიის სტატუსი შეიცვალა</value></data>
+  <data name="Admin_CategoryStatusChangeFailed" xml:space="preserve"><value>სტატუსის შეცვლა ვერ მოხერხდა</value></data>
+
+  <!-- ==================== MERCHANT ==================== -->
+  <data name="Merchant_Dashboard" xml:space="preserve"><value>მერჩანტის პანელი</value></data>
+  <data name="Merchant_DashboardSubtitle" xml:space="preserve"><value>მოგესალმებით! აქ შეგიძლიათ მართოთ თქვენი ფასდაკლებები და ნახოთ სტატისტიკა.</value></data>
+  <data name="Merchant_TotalDiscounts" xml:space="preserve"><value>სულ ფასდაკლებები</value></data>
+  <data name="Merchant_ActiveDiscounts" xml:space="preserve"><value>აქტიური</value></data>
+  <data name="Merchant_PendingDiscounts" xml:space="preserve"><value>მოლოდინში</value></data>
+  <data name="Merchant_ExpiredDiscounts" xml:space="preserve"><value>ვადაგასული</value></data>
+  <data name="Merchant_TotalSales" xml:space="preserve"><value>სულ გაყიდვები</value></data>
+  <data name="Merchant_TotalRevenue" xml:space="preserve"><value>სულ შემოსავალი</value></data>
+  <data name="Merchant_QuickActions" xml:space="preserve"><value>სწრაფი ქმედებები</value></data>
+  <data name="Merchant_NewDiscount" xml:space="preserve"><value>ახალი ფასდაკლება</value></data>
+  <data name="Merchant_CreateDiscount" xml:space="preserve"><value>ახალი ფასდაკლების შექმნა</value></data>
+  <data name="Merchant_EditDiscount" xml:space="preserve"><value>ფასდაკლების რედაქტირება</value></data>
+  <data name="Merchant_SalesHistory" xml:space="preserve"><value>გაყიდვების ისტორია</value></data>
+  <data name="Merchant_NoDiscountsInStatus" xml:space="preserve"><value>ამ სტატუსით ფასდაკლება არ მოიძებნა.</value></data>
+  <data name="Merchant_NoDiscountsYet" xml:space="preserve"><value>თქვენ ჯერ არ გაქვთ შექმნილი ფასდაკლებები. დაიწყეთ პირველის დამატებით!</value></data>
+
+  <!-- Merchant Messages -->
+  <data name="Merchant_DiscountCreated" xml:space="preserve"><value>ფასდაკლება წარმატებით შეიქმნა. ის გაიგზავნება ადმინისტრატორის დასამტკიცებლად.</value></data>
+  <data name="Merchant_CannotEdit" xml:space="preserve"><value>ფასდაკლების რედაქტირება შეუძლებელია. რედაქტირება შესაძლებელია მხოლოდ 24 საათის განმავლობაში შექმნის შემდეგ, ან თუ სტატუსი არის 'მოლოდინში' ან 'უარყოფილი'.</value></data>
+  <data name="Merchant_DiscountUpdated" xml:space="preserve"><value>ფასდაკლება წარმატებით განახლდა.</value></data>
+  <data name="Merchant_NoEditPermission" xml:space="preserve"><value>თქვენ არ გაქვთ ამ ფასდაკლების რედაქტირების უფლება.</value></data>
+  <data name="Merchant_DiscountDeleted" xml:space="preserve"><value>ფასდაკლება წარმატებით წაიშალა.</value></data>
+  <data name="Merchant_DiscountDeleteFailed" xml:space="preserve"><value>ფასდაკლების წაშლა ვერ მოხერხდა.</value></data>
+
+  <!-- Merchant Form -->
+  <data name="Merchant_Title" xml:space="preserve"><value>სათაური</value></data>
+  <data name="Merchant_DescriptionLabel" xml:space="preserve"><value>აღწერა</value></data>
+  <data name="Merchant_OriginalPrice" xml:space="preserve"><value>ორიგინალური ფასი</value></data>
+  <data name="Merchant_DiscountedPrice" xml:space="preserve"><value>ფასდაკლებული ფასი</value></data>
+  <data name="Merchant_CouponCount" xml:space="preserve"><value>კუპონების რაოდენობა</value></data>
+  <data name="Merchant_ValidFrom" xml:space="preserve"><value>მოქმედების დაწყება</value></data>
+  <data name="Merchant_ValidTo" xml:space="preserve"><value>მოქმედების დასრულება</value></data>
+  <data name="Merchant_ImageUrl" xml:space="preserve"><value>სურათის URL</value></data>
+  <data name="Merchant_PendingNote" xml:space="preserve"><value>შექმნის შემდეგ ფასდაკლება გაიგზავნება ადმინისტრატორის დასამტკიცებლად. დამტკიცების შემდეგ ის გახდება ხელმისაწვდომი მომხმარებლებისთვის.</value></data>
+  <data name="Merchant_EditWarning" xml:space="preserve"><value>ფასდაკლების რედაქტირება შესაძლებელია მხოლოდ 24 საათის განმავლობაში შექმნის შემდეგ, ან თუ სტატუსი არის "მოლოდინში" ან "უარყოფილი".</value></data>
+  <data name="Merchant_Update" xml:space="preserve"><value>განახლება</value></data>
+  <data name="Merchant_CouponsLabel" xml:space="preserve"><value>კუპონი</value></data>
+  <data name="Merchant_Available" xml:space="preserve"><value>ხელმისაწვდომი:</value></data>
+
+  <!-- ==================== CUSTOMER MESSAGES ==================== -->
+  <data name="Customer_ReservationCancelled" xml:space="preserve"><value>ჯავშანი გაუქმდა</value></data>
+  <data name="Customer_ReservationCancelFailed" xml:space="preserve"><value>ჯავშნის გაუქმება ვერ მოხერხდა</value></data>
+  <data name="Customer_CouponMarkedUsed" xml:space="preserve"><value>კუპონი მონიშნულია როგორც გამოყენებული</value></data>
+  <data name="Customer_OperationFailed" xml:space="preserve"><value>ოპერაცია ვერ შესრულდა</value></data>
+
+  <!-- ==================== STATUS LABELS ==================== -->
+  <data name="Status_Pending" xml:space="preserve"><value>მოლოდინში</value></data>
+  <data name="Status_Approved" xml:space="preserve"><value>დამტკიცებული</value></data>
+  <data name="Status_Active" xml:space="preserve"><value>აქტიური</value></data>
+  <data name="Status_Rejected" xml:space="preserve"><value>უარყოფილი</value></data>
+  <data name="Status_Expired" xml:space="preserve"><value>ვადაგასული</value></data>
+  <data name="Status_Suspended" xml:space="preserve"><value>შეჩერებული</value></data>
+  <data name="Status_Available" xml:space="preserve"><value>ხელმისაწვდომი</value></data>
+  <data name="Status_Reserved" xml:space="preserve"><value>დაჯავშნილი</value></data>
+  <data name="Status_Purchased" xml:space="preserve"><value>შეძენილი</value></data>
+  <data name="Status_Used" xml:space="preserve"><value>გამოყენებული</value></data>
+  <data name="Status_Deactivated" xml:space="preserve"><value>დეაქტივირებული</value></data>
+
+  <!-- ==================== ROLE LABELS ==================== -->
+  <data name="Role_Administrator" xml:space="preserve"><value>ადმინისტრატორი</value></data>
+  <data name="Role_Merchant" xml:space="preserve"><value>მერჩანტი</value></data>
+  <data name="Role_Customer" xml:space="preserve"><value>მომხმარებელი</value></data>
+</root>

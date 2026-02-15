@@ -1,0 +1,26 @@
+@using Discounts.Web.Controllers
+@{
+    ViewData["Title"] = L["Auth_AccessDenied"].Value;
+}
+
+<div class="text-center mt-5">
+    <div class="mb-4">
+        <i class="fas fa-ban text-danger" style="font-size: 5rem;"></i>
+    </div>
+    <h1 class="text-danger">@L["Auth_AccessDenied"]</h1>
+    <p class="lead text-muted">@L["Auth_NoPermission"]</p>
+
+    <hr class="w-50 mx-auto" />
+
+    <div class="d-flex gap-2 justify-content-center mt-4">
+        <a asp-controller="@(nameof(CustomerController).Replace("Controller", ""))" asp-action="@nameof(CustomerController.Index)" class="btn btn-primary">
+            <i class="fas fa-home"></i> @L["Auth_HomePage"]
+        </a>
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+            <a asp-controller="@(nameof(AccountController).Replace("Controller", ""))" asp-action="@nameof(AccountController.Login)" class="btn btn-outline-primary">
+                <i class="fas fa-sign-in-alt"></i> @L["Auth_Login"]
+            </a>
+        }
+    </div>
+</div>

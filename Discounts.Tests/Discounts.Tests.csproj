@@ -11,9 +11,22 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.2" />
+    <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.5.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Discounts.API\Discounts.API.csproj" />
+    <ProjectReference Include="..\Discounts.Application\Discounts.Application.csproj" />
+    <ProjectReference Include="..\Discounts.Domain\Discounts.Domain.csproj" />
+    <ProjectReference Include="..\Discounts.Infrastructure\Discounts.Infrastructure.csproj" />
+    <ProjectReference Include="..\Discounts.Persistance\Discounts.Persistance.csproj" />
   </ItemGroup>
 
   <ItemGroup>

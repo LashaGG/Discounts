@@ -1,0 +1,219 @@
+@model UserDto
+@{
+    ViewData["Title"] = "მომხმარებლის დეტალები";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-user"></i> მომხმარებლის დეტალები</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Users" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> უკან
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>ძირითადი ინფორმაცია</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">სახელი</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.FullName) ? "-" : Model.FullName)</dd>
+
+                        <dt class="col-sm-4">ელ. ფოსტა</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        @if (!string.IsNullOrEmpty(Model.CompanyName))
+                        {
+                            <dt class="col-sm-4">კომპანია</dt>
+                            <dd class="col-sm-8">@Model.CompanyName</dd>
+                        }
+
+                        <dt class="col-sm-4">როლები</dt>
+                        <dd class="col-sm-8">
+                            @foreach (var role in Model.Roles)
+                            {
+                                <span class="badge bg-@GetRoleColor(role) me-1">@GetRoleText(role)</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">სტატუსი</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success">აქტიური</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">დეაქტივირებული</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">რეგისტრაცია</dt>
+                        <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-4">ID</dt>
+                        <dd class="col-sm-8"><code>@Model.Id</code></dd>
+                    </dl>
+                </div>
+            </div>
+
+            @if (Model.Roles.Contains("Merchant"))
+            {
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5>მერჩანტის ინფორმაცია</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">
+                            <i class="fas fa-info-circle"></i>
+                            დეტალური სტატისტიკა მერჩანტის შესახებ მალე იქნება ხელმისაწვდომი.
+                        </p>
+                        <a href="/Merchant/MyDiscounts" class="btn btn-outline-primary">
+                            <i class="fas fa-tags"></i> ფასდაკლებები
+                        </a>
+                        <a href="/Merchant/SalesHistory" class="btn btn-outline-info">
+                            <i class="fas fa-chart-line"></i> გაყიდვები
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>მოქმედებები</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        @if (Model.IsActive)
+                        {
+                            <form asp-action="DeactivateUser" method="post">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-warning w-100" 
+                                        onclick="return confirm('დეაქტივაცია დაბლოკავს მომხმარებელს. გავაგრძელოთ?')">
+                                    <i class="fas fa-ban"></i> დეაქტივაცია
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="ActivateUser" method="post">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-check-circle"></i> აქტივაცია
+                                </button>
+                            </form>
+                        }
+
+                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#changeRoleModal">
+                            <i class="fas fa-user-tag"></i> როლის შეცვლა
+                        </button>
+
+                        <hr />
+
+                        <form asp-action="DeleteUser" method="post">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-danger w-100" 
+                                    onclick="return confirm('ეს მოქმედება შეუქცევადია! ნამდვილად გსურთ მომხმარებლის წაშლა?')">
+                                <i class="fas fa-trash"></i> წაშლა
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6>სტატისტიკა</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        დეტალური სტატისტიკა განვითარების პროცესშია...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Role Modal -->
+<div class="modal fade" id="changeRoleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="UpdateUserRole" method="post">
+                <input type="hidden" name="userId" value="@Model.Id" />
+                <div class="modal-header">
+                    <h5 class="modal-title">როლის შეცვლა</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newRole" class="form-label">აირჩიეთ ახალი როლი</label>
+                        <select name="newRole" id="newRole" class="form-select" required>
+                            <option value="">აირჩიეთ...</option>
+                            <option value="Administrator">ადმინისტრატორი</option>
+                            <option value="Merchant">მერჩანტი</option>
+                            <option value="Customer">მომხმარებელი</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        როლის შეცვლით მომხმარებელი დაკარგავს წინა როლის პრივილეგიებს!
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">გაუქმება</button>
+                    <button type="submit" class="btn btn-primary">შენახვა</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private static string GetRoleColor(string role)
+    {
+        return role switch
+        {
+            "Administrator" => "danger",
+            "Merchant" => "primary",
+            "Customer" => "success",
+            _ => "secondary"
+        };
+    }
+
+    private static string GetRoleText(string role)
+    {
+        return role switch
+        {
+            "Administrator" => "ადმინისტრატორი",
+            "Merchant" => "მერჩანტი",
+            "Customer" => "მომხმარებელი",
+            _ => role
+        };
+    }
+}

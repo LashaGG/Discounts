@@ -1,0 +1,157 @@
+@model IEnumerable<SalesHistoryDto>
+@{
+    ViewData["Title"] = "გაყიდვების ისტორია";
+    var discountTitle = ViewBag.DiscountTitle as string;
+    var discountId = ViewBag.DiscountId as int?;
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-chart-line"></i> გაყიდვების ისტორია</h2>
+            <p class="text-muted">@discountTitle</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Details" asp-route-id="@discountId" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> უკან
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> ამ ფასდაკლებას ჯერ არ აქვს გაყიდული კუპონები.
+        </div>
+    }
+    else
+    {
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h6>სულ შეკვეთები</h6>
+                        <h3>@Model.Count()</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h6>გაყიდული კუპონები</h6>
+                        <h3>@Model.Sum(s => s.Quantity)</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h6>სულ შემოსავალი</h6>
+                        <h3>@Model.Sum(s => s.TotalAmount).ToString("C")</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5>დეტალური ინფორმაცია</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>შეკვეთის №</th>
+                                <th>მყიდველი</th>
+                                <th>ელ. ფოსტა</th>
+                                <th>თარიღი</th>
+                                <th>რაოდენობა</th>
+                                <th>თანხა</th>
+                                <th>კუპონები</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sale in Model.OrderByDescending(s => s.PurchaseDate))
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@sale.OrderNumber</strong>
+                                    </td>
+                                    <td>@sale.CustomerName</td>
+                                    <td>@sale.CustomerEmail</td>
+                                    <td>
+                                        <small>
+                                            @sale.PurchaseDate.ToString("dd/MM/yyyy HH:mm")
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@sale.Quantity</span>
+                                    </td>
+                                    <td>
+                                        <strong>@sale.TotalAmount.ToString("C")</strong>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#couponsModal-@sale.OrderId">
+                                            <i class="fas fa-ticket-alt"></i> ნახვა (@sale.CouponCodes.Count)
+                                        </button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Coupons Modal -->
+                                <div class="modal fade" id="couponsModal-@sale.OrderId" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">კუპონების კოდები - @sale.OrderNumber</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <ul class="list-group">
+                                                    @foreach (var code in sale.CouponCodes)
+                                                    {
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <code>@code</code>
+                                                            <button class="btn btn-sm btn-outline-secondary" 
+                                                                    onclick="copyToClipboard('@code')">
+                                                                <i class="fas fa-copy"></i>
+                                                            </button>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-secondary">
+                                <th colspan="4" class="text-end">სულ:</th>
+                                <th><span class="badge bg-info">@Model.Sum(s => s.Quantity)</span></th>
+                                <th><strong>@Model.Sum(s => s.TotalAmount).ToString("C")</strong></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('კოდი დაკოპირდა: ' + text);
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+}

@@ -1,0 +1,114 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = L["Auth_Register"].Value;
+    var role = ViewBag.Role as string ?? "Customer";
+    var isMerchant = role == "Merchant";
+}
+
+<div class="auth-card">
+    <div class="card shadow">
+        <div class="card-header text-white text-center py-3 @(isMerchant ? "bg-primary" : "bg-success")">
+            <h4 class="mb-0">
+                @if (isMerchant)
+                {
+                    <i class="fas fa-building"></i> <text>@L["Auth_MerchantRegistration"]</text>
+                }
+                else
+                {
+                    <i class="fas fa-user-plus"></i> <text>@L["Auth_CustomerRegistration"]</text>
+                }
+            </h4>
+        </div>
+        <div class="card-body p-4">
+            <!-- Role selector -->
+            <div class="d-flex gap-2 mb-4 justify-content-center">
+                <a asp-action="Register" asp-route-role="Customer"
+                   class="btn @(!isMerchant ? "btn-success" : "btn-outline-success")">
+                    <i class="fas fa-user"></i> @L["Auth_Customer"]
+                </a>
+                <a asp-action="Register" asp-route-role="Merchant"
+                   class="btn @(isMerchant ? "btn-primary" : "btn-outline-primary")">
+                    <i class="fas fa-building"></i> @L["Auth_Merchant"]
+                </a>
+            </div>
+
+            <form asp-action="Register" method="post">
+                <input type="hidden" asp-for="Role" value="@role" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FirstName" class="form-label">@L["Auth_FirstName"] *</label>
+                        <input asp-for="FirstName" class="form-control" placeholder="@L["Auth_FirstName"].Value" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="LastName" class="form-label">@L["Auth_LastName"] *</label>
+                        <input asp-for="LastName" class="form-control" placeholder="@L["Auth_LastName"].Value" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">
+                        <i class="fas fa-envelope"></i> @L["Auth_Email"] *
+                    </label>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="your@email.com" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                @if (isMerchant)
+                {
+                    <div class="mb-3">
+                        <label asp-for="CompanyName" class="form-label">
+                            <i class="fas fa-building"></i> @L["Auth_CompanyName"] *
+                        </label>
+                        <input asp-for="CompanyName" class="form-control" placeholder="@L["Auth_CompanyPlaceholder"].Value" />
+                        <span asp-validation-for="CompanyName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CompanyDescription" class="form-label">@L["Auth_CompanyDescription"]</label>
+                        <textarea asp-for="CompanyDescription" class="form-control" rows="3"
+                                  placeholder="@L["Auth_CompanyDescPlaceholder"].Value"></textarea>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">
+                        <i class="fas fa-lock"></i> @L["Auth_Password"] *
+                    </label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="@L["Auth_MinChars"].Value" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label">
+                        <i class="fas fa-lock"></i> @L["Auth_ConfirmPassword"] *
+                    </label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="@L["Auth_RepeatPassword"].Value" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn @(isMerchant ? "btn-primary" : "btn-success") btn-lg">
+                        <i class="fas fa-user-plus"></i> @L["Auth_Register"]
+                    </button>
+                </div>
+            </form>
+
+            <hr />
+
+            <div class="text-center">
+                <p class="mb-0">
+                    @L["Auth_HaveAccount"]
+                    <a asp-action="Login" class="fw-bold">@L["Auth_Login"]</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

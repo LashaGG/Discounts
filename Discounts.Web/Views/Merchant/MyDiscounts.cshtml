@@ -1,0 +1,212 @@
+@model IEnumerable<DiscountDto>
+@{
+    ViewData["Title"] = "ჩემი ფასდაკლებები";
+    var currentStatus = ViewBag.CurrentStatus as DiscountStatus?;
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2><i class="fas fa-tags"></i> ჩემი ფასდაკლებები</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="CreateDiscount" class="btn btn-primary">
+                <i class="fas fa-plus"></i> ახალი ფასდაკლება
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <a asp-action="MyDiscounts" class="btn @(currentStatus == null ? "btn-primary" : "btn-outline-primary")">
+                    ყველა
+                </a>
+                <a asp-action="MyDiscounts" asp-route-status="@DiscountStatus.Active" 
+                   class="btn @(currentStatus == DiscountStatus.Active ? "btn-success" : "btn-outline-success")">
+                    აქტიური
+                </a>
+                <a asp-action="MyDiscounts" asp-route-status="@DiscountStatus.Pending" 
+                   class="btn @(currentStatus == DiscountStatus.Pending ? "btn-warning" : "btn-outline-warning")">
+                    მოლოდინში
+                </a>
+                <a asp-action="MyDiscounts" asp-route-status="@DiscountStatus.Expired" 
+                   class="btn @(currentStatus == DiscountStatus.Expired ? "btn-secondary" : "btn-outline-secondary")">
+                    ვადაგასული
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> 
+            @if (currentStatus.HasValue)
+            {
+                <text>ამ სტატუსით ფასდაკლება არ მოიძებნა.</text>
+            }
+            else
+            {
+                <text>თქვენ ჯერ არ გაქვთ შექმნილი ფასდაკლებები. დაიწყეთ პირველის დამატებით!</text>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var discount in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        @if (!string.IsNullOrEmpty(discount.ImageUrl))
+                        {
+                            <img src="@discount.ImageUrl" class="card-img-top" alt="@discount.Title" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-image fa-3x text-muted"></i>
+                            </div>
+                        }
+                        
+                        <div class="card-body">
+                            <h5 class="card-title">@discount.Title</h5>
+                            <p class="card-text text-truncate">@discount.Description</p>
+                            
+                            <div class="mb-2">
+                                <span class="badge bg-@GetStatusColor(discount.Status)">
+                                    @GetStatusText(discount.Status)
+                                </span>
+                                <span class="badge bg-info">@discount.CategoryName</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <del class="text-muted">@discount.OriginalPrice.ToString("C")</del>
+                                <strong class="text-success fs-5">@discount.DiscountedPrice.ToString("C")</strong>
+                                <span class="badge bg-danger">-@discount.DiscountPercentage%</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-ticket-alt"></i> 
+                                    ხელმისაწვდომი: @discount.AvailableCoupons / @discount.TotalCoupons
+                                </small>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i>
+                                    @discount.ValidFrom.ToString("dd/MM/yyyy") - @discount.ValidTo.ToString("dd/MM/yyyy")
+                                </small>
+                            </div>
+
+                            @if (discount.Status == DiscountStatus.Rejected && !string.IsNullOrEmpty(discount.ToString()))
+                            {
+                                <div class="alert alert-danger p-2 small mb-2">
+                                    <i class="fas fa-times-circle"></i> უარყოფილია
+                                </div>
+                            }
+                        </div>
+
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100" role="group">
+                                <a asp-action="Details" asp-route-id="@discount.Id" 
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye"></i> დეტალები
+                                </a>
+                                
+                                @if (discount.Status == DiscountStatus.Pending || discount.Status == DiscountStatus.Rejected)
+                                {
+                                    <a asp-action="EditDiscount" asp-route-id="@discount.Id" 
+                                       class="btn btn-sm btn-outline-warning">
+                                        <i class="fas fa-edit"></i> რედაქტირება
+                                    </a>
+                                }
+
+                                @if (discount.SoldCoupons == 0)
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            onclick="confirmDelete(@discount.Id)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                }
+
+                                @if (discount.SoldCoupons > 0)
+                                {
+                                    <a asp-action="SalesHistory" asp-route-id="@discount.Id" 
+                                       class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-chart-line"></i> გაყიდვები
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Delete Confirmation Modal -->
+<form asp-action="Delete" method="post" id="deleteForm">
+    <input type="hidden" name="id" id="deleteId" />
+</form>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id) {
+            if (confirm('დარწმუნებული ხართ რომ გსურთ ამ ფასდაკლების წაშლა?')) {
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}
+
+@functions {
+    private static string GetStatusColor(DiscountStatus status)
+    {
+        return status switch
+        {
+            DiscountStatus.Pending => "warning",
+            DiscountStatus.Approved => "info",
+            DiscountStatus.Active => "success",
+            DiscountStatus.Rejected => "danger",
+            DiscountStatus.Expired => "secondary",
+            DiscountStatus.Suspended => "dark",
+            _ => "secondary"
+        };
+    }
+
+    private static string GetStatusText(DiscountStatus status)
+    {
+        return status switch
+        {
+            DiscountStatus.Pending => "მოლოდინში",
+            DiscountStatus.Approved => "დამტკიცებული",
+            DiscountStatus.Active => "აქტიური",
+            DiscountStatus.Rejected => "უარყოფილი",
+            DiscountStatus.Expired => "ვადაგასული",
+            DiscountStatus.Suspended => "შეჩერებული",
+            _ => status.ToString()
+        };
+    }
+}

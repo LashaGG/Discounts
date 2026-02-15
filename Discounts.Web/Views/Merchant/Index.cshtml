@@ -1,0 +1,214 @@
+@model MerchantDashboardDto
+@{
+    ViewData["Title"] = "Merchant Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Dashboard - მერჩანტის პანელი</h2>
+            <p class="text-muted">მოგესალმებით! აქ შეგიძლიათ მართოთ თქვენი ფასდაკლებები და ნახოთ სტატისტიკა.</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">სულ ფასდაკლებები</h5>
+                    <h2>@Model.TotalDiscounts</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">აქტიური</h5>
+                    <h2>@Model.ActiveDiscounts</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">მოლოდინში</h5>
+                    <h2>@Model.PendingDiscounts</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">ვადაგასული</h5>
+                    <h2>@Model.ExpiredDiscounts</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">სულ გაყიდვები</h5>
+                    <h2>@Model.TotalSales კუპონი</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">სულ შემოსავალი</h5>
+                    <h2>@Model.TotalRevenue.ToString("C")</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">სწრაფი ქმედებები</h5>
+                    <div class="btn-group" role="group">
+                        <a asp-action="CreateDiscount" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> ახალი ფასდაკლება
+                        </a>
+                        <a asp-action="MyDiscounts" class="btn btn-secondary">
+                            <i class="fas fa-list"></i> ჩემი ფასდაკლებები
+                        </a>
+                        <a asp-action="MyDiscounts" asp-route-status="@DiscountStatus.Pending" class="btn btn-warning">
+                            <i class="fas fa-clock"></i> მოლოდინში (@Model.PendingDiscounts)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Discounts -->
+    @if (Model.RecentDiscounts.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>ბოლო ფასდაკლებები</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>სათაური</th>
+                                        <th>კატეგორია</th>
+                                        <th>სტატუსი</th>
+                                        <th>ფასი</th>
+                                        <th>ხელმისაწვდომი</th>
+                                        <th>მოქმედებები</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var discount in Model.RecentDiscounts)
+                                    {
+                                        <tr>
+                                            <td>@discount.Title</td>
+                                            <td>@discount.CategoryName</td>
+                                            <td>
+                                                <span class="badge bg-@GetStatusColor(discount.Status)">
+                                                    @GetStatusText(discount.Status)
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <del>@discount.OriginalPrice.ToString("C")</del>
+                                                <strong>@discount.DiscountedPrice.ToString("C")</strong>
+                                            </td>
+                                            <td>@discount.AvailableCoupons / @discount.TotalCoupons</td>
+                                            <td>
+                                                <a asp-action="Details" asp-route-id="@discount.Id" class="btn btn-sm btn-info">დეტალები</a>
+                                                @if (discount.Status == DiscountStatus.Pending || discount.Status == DiscountStatus.Rejected)
+                                                {
+                                                    <a asp-action="EditDiscount" asp-route-id="@discount.Id" class="btn btn-sm btn-warning">რედაქტირება</a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Sales Statistics -->
+    @if (Model.SalesStats.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>გაყიდვების სტატისტიკა</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ფასდაკლება</th>
+                                        <th>გაყიდული კუპონები</th>
+                                        <th>შემოსავალი</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var stat in Model.SalesStats.OrderByDescending(s => s.Revenue))
+                                    {
+                                        <tr>
+                                            <td>@stat.DiscountTitle</td>
+                                            <td>@stat.CouponsSold</td>
+                                            <td>@stat.Revenue.ToString("C")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@functions {
+    private static string GetStatusColor(DiscountStatus status)
+    {
+        return status switch
+        {
+            DiscountStatus.Pending => "warning",
+            DiscountStatus.Approved => "info",
+            DiscountStatus.Active => "success",
+            DiscountStatus.Rejected => "danger",
+            DiscountStatus.Expired => "secondary",
+            DiscountStatus.Suspended => "dark",
+            _ => "secondary"
+        };
+    }
+
+    private static string GetStatusText(DiscountStatus status)
+    {
+        return status switch
+        {
+            DiscountStatus.Pending => "მოლოდინში",
+            DiscountStatus.Approved => "დამტკიცებული",
+            DiscountStatus.Active => "აქტიური",
+            DiscountStatus.Rejected => "უარყოფილი",
+            DiscountStatus.Expired => "ვადაგასული",
+            DiscountStatus.Suspended => "შეჩერებული",
+            _ => status.ToString()
+        };
+    }
+}

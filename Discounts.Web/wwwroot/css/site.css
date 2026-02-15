@@ -1,5 +1,7 @@
 html {
   font-size: 14px;
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -8,15 +10,95 @@ html {
   }
 }
 
+body {
+  margin-bottom: 60px;
+  background-color: #f8f9fa;
+}
+
+/* Focus states */
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+/* Footer */
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
 }
 
-body {
-  margin-bottom: 60px;
+/* Card hover */
+.card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.15) !important;
+}
+
+/* Hero section for landing page */
+.hero-section {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff;
+  padding: 4rem 0;
+  margin-top: -1rem;
+}
+
+.hero-section h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+}
+
+/* Discount badge on cards */
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.9rem;
+  z-index: 1;
+}
+
+/* Coupon code styling */
+.coupon-code-display,
+.coupon-code-box,
+.coupon-code-large {
+  border: 2px dashed #007bff;
+}
+
+/* Auth card centering */
+.auth-card {
+  max-width: 480px;
+  margin: 2rem auto;
+}
+
+/* Stat card in dashboards */
+.stat-card {
+  border-radius: 0.5rem;
+  transition: transform 0.15s;
+}
+.stat-card:hover {
+  transform: scale(1.02);
+}
+
+/* Navbar active link */
+.navbar-dark .navbar-nav .nav-link.active {
+  font-weight: 600;
+}
+
+/* Landing categories row */
+.category-pill {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 50px;
+  background: #e9ecef;
+  margin: 0.25rem;
+  transition: background 0.2s;
+  color: #333;
+  text-decoration: none;
+}
+.category-pill:hover {
+  background: #0d6efd;
+  color: #fff;
 }

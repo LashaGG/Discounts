@@ -1,0 +1,164 @@
+@model IEnumerable<UserDto>
+@{
+    ViewData["Title"] = "მომხმარებლების მართვა";
+    var selectedRole = ViewBag.SelectedRole as string;
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-users"></i> მომხმარებლების მართვა</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <a asp-action="Users" class="btn @(selectedRole == null ? "btn-primary" : "btn-outline-primary")">
+                    ყველა
+                </a>
+                <a asp-action="Users" asp-route-role="Administrator" 
+                   class="btn @(selectedRole == "Administrator" ? "btn-primary" : "btn-outline-primary")">
+                    ადმინისტრატორები
+                </a>
+                <a asp-action="Users" asp-route-role="Merchant" 
+                   class="btn @(selectedRole == "Merchant" ? "btn-primary" : "btn-outline-primary")">
+                    მერჩანტები
+                </a>
+                <a asp-action="Users" asp-route-role="Customer" 
+                   class="btn @(selectedRole == "Customer" ? "btn-primary" : "btn-outline-primary")">
+                    მომხმარებლები
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>სახელი</th>
+                            <th>ელ. ფოსტა</th>
+                            <th>როლი</th>
+                            <th>კომპანია</th>
+                            <th>სტატუსი</th>
+                            <th>რეგისტრაცია</th>
+                            <th>მოქმედებები</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.FullName</td>
+                                <td>@user.Email</td>
+                                <td>
+                                    @foreach (var role in user.Roles)
+                                    {
+                                        <span class="badge bg-@GetRoleColor(role) me-1">@GetRoleText(role)</span>
+                                    }
+                                </td>
+                                <td>@(user.CompanyName ?? "-")</td>
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success">აქტიური</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">დეაქტივირებული</span>
+                                    }
+                                </td>
+                                <td>@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="UserDetails" asp-route-id="@user.Id" 
+                                           class="btn btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        
+                                        @if (user.IsActive)
+                                        {
+                                            <form asp-action="DeactivateUser" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@user.Id" />
+                                                <button type="submit" class="btn btn-warning" 
+                                                        onclick="return confirm('დარწმუნებული ხართ?')">
+                                                    <i class="fas fa-ban"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="ActivateUser" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@user.Id" />
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                        }
+
+                                        <form asp-action="DeleteUser" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@user.Id" />
+                                            <button type="submit" class="btn btn-danger" 
+                                                    onclick="return confirm('ნამდვილად გსურთ წაშლა?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private static string GetRoleColor(string role)
+    {
+        return role switch
+        {
+            "Administrator" => "danger",
+            "Merchant" => "primary",
+            "Customer" => "success",
+            _ => "secondary"
+        };
+    }
+
+    private static string GetRoleText(string role)
+    {
+        return role switch
+        {
+            "Administrator" => "ადმინისტრატორი",
+            "Merchant" => "მერჩანტი",
+            "Customer" => "მომხმარებელი",
+            _ => role
+        };
+    }
+}
