@@ -91,6 +91,12 @@ public class MerchantService : IMerchantService
         if (model.DiscountedPrice >= model.OriginalPrice)
             throw new InvalidOperationException("ფასდაკლებული ფასი უნდა იყოს ნაკლები ორიგინალურ ფასზე");
 
+        // Convert local dates to UTC for consistent storage
+        if (model.ValidFrom.Kind != DateTimeKind.Utc)
+            model.ValidFrom = model.ValidFrom.ToUniversalTime();
+        if (model.ValidTo.Kind != DateTimeKind.Utc)
+            model.ValidTo = model.ValidTo.ToUniversalTime();
+
         if (model.ValidFrom >= model.ValidTo)
             throw new InvalidOperationException("დასრულების თარიღი უნდა იყოს დაწყების თარიღზე გვიან");
 
@@ -125,6 +131,12 @@ public class MerchantService : IMerchantService
 
         if (model.DiscountedPrice >= model.OriginalPrice)
             throw new InvalidOperationException("ფასდაკლებული ფასი უნდა იყოს ნაკლები ორიგინალურ ფასზე");
+
+        // Convert local dates to UTC for consistent storage
+        if (model.ValidFrom.Kind != DateTimeKind.Utc)
+            model.ValidFrom = model.ValidFrom.ToUniversalTime();
+        if (model.ValidTo.Kind != DateTimeKind.Utc)
+            model.ValidTo = model.ValidTo.ToUniversalTime();
 
         if (model.ValidFrom >= model.ValidTo)
             throw new InvalidOperationException("დასრულების თარიღი უნდა იყოს დაწყების თარიღზე გვიან");

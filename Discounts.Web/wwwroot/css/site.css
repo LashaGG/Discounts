@@ -1,104 +1,528 @@
+/* ============================================================
+   SWOOP-INSPIRED DESIGN SYSTEM
+   Primary: #FFE600 (Yellow)  |  Accent: #E31E24 (Red)
+   ============================================================ */
+
+:root {
+  --swoop-yellow:     #FFE600;
+  --swoop-yellow-dark:#E6CE00;
+  --swoop-red:        #E31E24;
+  --swoop-red-dark:   #C01A1F;
+  --swoop-dark:       #1A1A1A;
+  --swoop-gray:       #F5F5F5;
+  --swoop-gray-mid:   #E0E0E0;
+  --swoop-text:       #222222;
+  --swoop-muted:      #6B6B6B;
+  --swoop-white:      #FFFFFF;
+  --swoop-radius:     14px;
+  --swoop-radius-sm:  8px;
+  --swoop-shadow:     0 2px 16px rgba(0,0,0,0.09);
+  --swoop-shadow-hover: 0 6px 28px rgba(0,0,0,0.15);
+}
+
+/* ── Base ── */
 html {
   font-size: 14px;
   position: relative;
   min-height: 100%;
 }
-
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+  html { font-size: 16px; }
 }
 
 body {
-  margin-bottom: 60px;
-  background-color: #f8f9fa;
+  margin-bottom: 0;
+  background-color: var(--swoop-gray);
+  color: var(--swoop-text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-/* Focus states */
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* ── Focus states ── */
+.btn:focus, .btn:active:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 230, 0, 0.45);
 }
 
-/* Footer */
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--swoop-gray); }
+::-webkit-scrollbar-thumb { background: var(--swoop-gray-mid); border-radius: 3px; }
+
+/* ============================================================
+   NAVBAR  (yellow header like swoop.ge)
+   ============================================================ */
+.swoop-navbar {
+  background-color: var(--swoop-yellow) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  padding: 0.6rem 1rem;
 }
 
-/* Card hover */
+.swoop-navbar .navbar-brand {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--swoop-red) !important;
+  letter-spacing: -1px;
+  text-decoration: none;
+}
+.swoop-navbar .navbar-brand:hover {
+  color: var(--swoop-red-dark) !important;
+}
+
+.swoop-navbar .nav-link {
+  color: var(--swoop-dark) !important;
+  font-weight: 600;
+  border-radius: var(--swoop-radius-sm);
+  padding: 0.4rem 0.75rem !important;
+  transition: background 0.15s, color 0.15s;
+}
+.swoop-navbar .nav-link:hover,
+.swoop-navbar .nav-link:focus {
+  background: rgba(0,0,0,0.08);
+  color: var(--swoop-red) !important;
+}
+
+.swoop-navbar .navbar-toggler {
+  border-color: rgba(0,0,0,0.25);
+  background: rgba(0,0,0,0.06);
+}
+.swoop-navbar .navbar-toggler-icon {
+  filter: brightness(0);
+}
+
+/* Dropdowns under yellow navbar */
+.swoop-navbar .dropdown-menu {
+  border: none;
+  border-radius: var(--swoop-radius-sm);
+  box-shadow: var(--swoop-shadow-hover);
+  background: var(--swoop-white);
+}
+.swoop-navbar .dropdown-item {
+  color: var(--swoop-text);
+  font-weight: 500;
+}
+.swoop-navbar .dropdown-item:hover {
+  background: var(--swoop-yellow);
+  color: var(--swoop-dark);
+}
+.swoop-navbar .dropdown-divider {
+  border-color: var(--swoop-gray-mid);
+}
+
+/* Login / Register buttons in navbar */
+.btn-swoop-login {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: transparent;
+  color: var(--swoop-dark);
+  border: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--swoop-radius-sm);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.btn-swoop-login:hover {
+  background: rgba(0,0,0,0.08);
+  color: var(--swoop-red);
+  text-decoration: none;
+}
+
+/* ============================================================
+   MAIN CONTENT WRAPPER
+   ============================================================ */
+.main-content {
+  background: var(--swoop-white);
+  min-height: calc(100vh - 120px);
+}
+
+/* ============================================================
+   HERO / BANNER  (yellow, bold)
+   ============================================================ */
+.hero-section {
+  background: var(--swoop-yellow);
+  color: var(--swoop-dark);
+  padding: 2rem 1.5rem;
+  margin-top: 0;
+  border-radius: 0 0 var(--swoop-radius) var(--swoop-radius);
+}
+.hero-section h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--swoop-dark);
+}
+.hero-section .lead {
+  color: rgba(26,26,26,0.75);
+  font-weight: 500;
+}
+.hero-section .btn-primary {
+  background: var(--swoop-dark);
+  border-color: var(--swoop-dark);
+  color: var(--swoop-yellow);
+  border-radius: 50px;
+  font-weight: 700;
+  padding: 0.65rem 1.8rem;
+}
+.hero-section .btn-primary:hover {
+  background: #333;
+  border-color: #333;
+}
+.hero-section .btn-outline-dark {
+  border-radius: 50px;
+  font-weight: 700;
+  padding: 0.65rem 1.8rem;
+}
+
+/* ============================================================
+   CARDS  (discount cards)
+   ============================================================ */
+.card {
+  border: none;
+  border-radius: var(--swoop-radius) !important;
+  box-shadow: var(--swoop-shadow);
+  background: var(--swoop-white);
+  overflow: hidden;
+}
+
 .card-hover {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.15) !important;
+  transform: translateY(-5px);
+  box-shadow: var(--swoop-shadow-hover) !important;
 }
 
-/* Hero section for landing page */
-.hero-section {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  color: #fff;
-  padding: 4rem 0;
-  margin-top: -1rem;
+.card-img-top {
+  border-radius: 0 !important;
 }
 
-.hero-section h1 {
-  font-size: 2.8rem;
+.card-title {
   font-weight: 700;
+  font-size: 1rem;
+  color: var(--swoop-dark);
 }
 
-/* Discount badge on cards */
+.card-header {
+  font-weight: 600;
+  border-bottom: none;
+  background: var(--swoop-white);
+  padding: 1rem 1.25rem 0.5rem;
+}
+
+/* ── Discount percentage badge (red, top-right) ── */
 .discount-badge {
   position: absolute;
   top: 10px;
   right: 10px;
+  background: var(--swoop-red) !important;
+  color: var(--swoop-white) !important;
+  font-size: 0.8rem;
+  font-weight: 800;
+  border-radius: 6px;
+  padding: 3px 8px;
+  z-index: 2;
+  letter-spacing: 0.3px;
+}
+
+/* ── Price styling ── */
+.price-original {
+  color: var(--swoop-muted);
+  text-decoration: line-through;
   font-size: 0.9rem;
-  z-index: 1;
+}
+.price-discounted {
+  color: var(--swoop-dark);
+  font-weight: 800;
+  font-size: 1.25rem;
 }
 
-/* Coupon code styling */
-.coupon-code-display,
-.coupon-code-box,
-.coupon-code-large {
-  border: 2px dashed #007bff;
+/* ── Remaining bar / info ── */
+.remaining-bar-wrap {
+  height: 5px;
+  background: var(--swoop-gray-mid);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.remaining-bar-fill {
+  height: 100%;
+  background: var(--swoop-red);
+  border-radius: 3px;
 }
 
-/* Auth card centering */
+/* ============================================================
+   CATEGORY PILLS
+   ============================================================ */
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 50px;
+  background: var(--swoop-white);
+  border: 2px solid var(--swoop-gray-mid);
+  margin: 0.25rem;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  color: var(--swoop-text);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.category-pill:hover {
+  background: var(--swoop-yellow);
+  border-color: var(--swoop-yellow);
+  color: var(--swoop-dark);
+  text-decoration: none;
+}
+.category-pill.bg-primary {
+  background: var(--swoop-yellow) !important;
+  border-color: var(--swoop-yellow) !important;
+  color: var(--swoop-dark) !important;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-primary {
+  background-color: var(--swoop-yellow);
+  border-color: var(--swoop-yellow);
+  color: var(--swoop-dark);
+  font-weight: 700;
+  border-radius: 50px;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--swoop-yellow-dark);
+  border-color: var(--swoop-yellow-dark);
+  color: var(--swoop-dark);
+}
+
+.btn-danger {
+  background-color: var(--swoop-red);
+  border-color: var(--swoop-red);
+  border-radius: 50px;
+  font-weight: 700;
+}
+.btn-danger:hover {
+  background-color: var(--swoop-red-dark);
+  border-color: var(--swoop-red-dark);
+}
+
+.btn-outline-primary {
+  border-color: var(--swoop-yellow);
+  color: var(--swoop-dark);
+  font-weight: 700;
+  border-radius: 50px;
+}
+.btn-outline-primary:hover {
+  background-color: var(--swoop-yellow);
+  border-color: var(--swoop-yellow);
+  color: var(--swoop-dark);
+}
+
+.btn-outline-secondary {
+  border-radius: 50px;
+  font-weight: 600;
+}
+
+.btn-success {
+  border-radius: 50px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   BADGES / STATUS LABELS
+   ============================================================ */
+.badge {
+  border-radius: 6px;
+  font-weight: 700;
+}
+.badge.bg-warning {
+  color: var(--swoop-dark) !important;
+}
+
+/* ============================================================
+   FORMS & INPUTS
+   ============================================================ */
+.form-control, .form-select {
+  border-radius: var(--swoop-radius-sm);
+  border: 2px solid var(--swoop-gray-mid);
+  transition: border-color 0.15s;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--swoop-yellow);
+  box-shadow: 0 0 0 3px rgba(255,230,0,0.2);
+}
+
+/* Search bar like swoop */
+.swoop-search {
+  border-radius: 50px !important;
+  border: 2px solid var(--swoop-gray-mid) !important;
+  padding: 0.6rem 1.2rem !important;
+  font-size: 1rem;
+  background: var(--swoop-white);
+}
+.swoop-search:focus {
+  border-color: var(--swoop-yellow) !important;
+  box-shadow: 0 0 0 3px rgba(255,230,0,0.25) !important;
+}
+.swoop-search-btn {
+  border-radius: 50px !important;
+  background: var(--swoop-yellow) !important;
+  border-color: var(--swoop-yellow) !important;
+  color: var(--swoop-dark) !important;
+  font-weight: 700;
+  padding: 0.6rem 1.2rem !important;
+}
+.swoop-search-btn:hover {
+  background: var(--swoop-yellow-dark) !important;
+  border-color: var(--swoop-yellow-dark) !important;
+}
+
+/* ============================================================
+   AUTH PAGES
+   ============================================================ */
 .auth-card {
   max-width: 480px;
   margin: 2rem auto;
+  border-radius: var(--swoop-radius) !important;
 }
 
-/* Stat card in dashboards */
+/* ============================================================
+   DASHBOARD STAT CARDS
+   ============================================================ */
 .stat-card {
-  border-radius: 0.5rem;
+  border-radius: var(--swoop-radius) !important;
   transition: transform 0.15s;
+  border: none;
+  box-shadow: var(--swoop-shadow);
 }
 .stat-card:hover {
   transform: scale(1.02);
 }
-
-/* Navbar active link */
-.navbar-dark .navbar-nav .nav-link.active {
-  font-weight: 600;
+.stat-card .card-body {
+  padding: 1.5rem;
 }
 
-/* Landing categories row */
-.category-pill {
-  display: inline-block;
-  padding: 0.5rem 1.2rem;
-  border-radius: 50px;
-  background: #e9ecef;
-  margin: 0.25rem;
-  transition: background 0.2s;
-  color: #333;
+/* ============================================================
+   COUPON CODE
+   ============================================================ */
+.coupon-code-display,
+.coupon-code-box,
+.coupon-code-large {
+  border: 3px dashed var(--swoop-yellow);
+  border-radius: var(--swoop-radius-sm);
+  background: var(--swoop-gray);
+}
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+.alert {
+  border-radius: var(--swoop-radius-sm);
+  border: none;
+  font-weight: 500;
+}
+.alert-warning {
+  background: #FFF9CC;
+  color: #7A6200;
+}
+.alert-success {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+.alert-danger {
+  background: #FFEBEE;
+  color: #C62828;
+}
+.alert-info {
+  background: #E3F2FD;
+  color: #1565C0;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  background: var(--swoop-dark) !important;
+  color: rgba(255,255,255,0.5);
+  padding: 0.5rem 0;
+  line-height: 1.5;
+  font-size: 0.85rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+.footer a {
+  color: rgba(255,255,255,0.5);
   text-decoration: none;
 }
-.category-pill:hover {
-  background: #0d6efd;
-  color: #fff;
+.footer a:hover {
+  color: var(--swoop-yellow);
 }
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.table {
+  border-radius: var(--swoop-radius-sm);
+  overflow: hidden;
+}
+.table thead th {
+  background: var(--swoop-gray);
+  border-bottom: 2px solid var(--swoop-gray-mid);
+  font-weight: 700;
+  color: var(--swoop-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.table-hover tbody tr:hover {
+  background: #FFFDE7;
+}
+
+/* ============================================================
+   SECTION HEADINGS
+   ============================================================ */
+.section-heading {
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: var(--swoop-dark);
+}
+.section-heading::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 1.2em;
+  background: var(--swoop-yellow);
+  border-radius: 2px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* ============================================================
+   MISC
+   ============================================================ */
+.navbar-dark .navbar-nav .nav-link.active {
+  font-weight: 700;
+}
+
+/* Sold-out overlay */
+.sold-out-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  border-radius: var(--swoop-radius);
+}
+.sold-out-label {
+  background: var(--swoop-red);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 0.4rem 1.2rem;
+  border-radius: 50px;
+}
+

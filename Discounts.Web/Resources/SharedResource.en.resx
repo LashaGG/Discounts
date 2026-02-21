@@ -275,6 +275,67 @@
   <data name="Status_Used" xml:space="preserve"><value>Used</value></data>
   <data name="Status_Deactivated" xml:space="preserve"><value>Deactivated</value></data>
 
+  <!-- ==================== PURCHASE SUCCESS ==================== -->
+  <data name="PurchaseSuccess_Title" xml:space="preserve"><value>Purchase Successful!</value></data>
+  <data name="PurchaseSuccess_Heading" xml:space="preserve"><value>Purchase Successful!</value></data>
+  <data name="PurchaseSuccess_CouponReady" xml:space="preserve"><value>Your coupon is ready to use</value></data>
+  <data name="PurchaseSuccess_YourCoupon" xml:space="preserve"><value>Your Coupon</value></data>
+  <data name="PurchaseSuccess_CouponCode" xml:space="preserve"><value>Coupon Code</value></data>
+  <data name="PurchaseSuccess_OriginalPrice" xml:space="preserve"><value>Original Price:</value></data>
+  <data name="PurchaseSuccess_Paid" xml:space="preserve"><value>Paid:</value></data>
+  <data name="PurchaseSuccess_Savings" xml:space="preserve"><value>Savings:</value></data>
+  <data name="PurchaseSuccess_PurchaseDate" xml:space="preserve"><value>Purchase Date:</value></data>
+  <data name="PurchaseSuccess_ValidUntil" xml:space="preserve"><value>Valid:</value></data>
+  <data name="PurchaseSuccess_ImportantNote" xml:space="preserve"><value>Important:</value></data>
+  <data name="PurchaseSuccess_SaveCode" xml:space="preserve"><value>Keep the coupon code safe. Show it to the merchant when using it.</value></data>
+  <data name="PurchaseSuccess_MoreDiscounts" xml:space="preserve"><value>More Discounts</value></data>
+  <data name="PurchaseSuccess_MyCoupons" xml:space="preserve"><value>My Coupons</value></data>
+  <data name="PurchaseSuccess_CouponDetails" xml:space="preserve"><value>Coupon Details</value></data>
+  <data name="PurchaseSuccess_HowToUse" xml:space="preserve"><value>How to Use?</value></data>
+  <data name="PurchaseSuccess_Step1" xml:space="preserve"><value>Visit the merchant's location or website</value></data>
+  <data name="PurchaseSuccess_Step2" xml:space="preserve"><value>Show the coupon code:</value></data>
+  <data name="PurchaseSuccess_Step3" xml:space="preserve"><value>Get the discount</value></data>
+  <data name="PurchaseSuccess_Step4" xml:space="preserve"><value>The coupon will be automatically marked as used</value></data>
+
+  <!-- ==================== COUPON DETAILS ==================== -->
+  <data name="CouponDetails_Title" xml:space="preserve"><value>Coupon Details</value></data>
+  <data name="CouponDetails_MyCoupons" xml:space="preserve"><value>My Coupons</value></data>
+  <data name="CouponDetails_CouponCode" xml:space="preserve"><value>Coupon Code</value></data>
+  <data name="CouponDetails_Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="CouponDetails_Reserved" xml:space="preserve"><value>Reserved!</value></data>
+  <data name="CouponDetails_ReservedMsg" xml:space="preserve"><value>Please complete the purchase or cancel the reservation.</value></data>
+  <data name="CouponDetails_ExpiredTitle" xml:space="preserve"><value>Expired!</value></data>
+  <data name="CouponDetails_ExpiredMsg" xml:space="preserve"><value>This coupon is no longer usable.</value></data>
+  <data name="CouponDetails_ActiveTitle" xml:space="preserve"><value>Active!</value></data>
+  <data name="CouponDetails_ActiveMsg" xml:space="preserve"><value>You can use this coupon.</value></data>
+  <data name="CouponDetails_UsedTitle" xml:space="preserve"><value>Used!</value></data>
+  <data name="CouponDetails_UsedMsg" xml:space="preserve"><value>Thank you for using our service.</value></data>
+  <data name="CouponDetails_Info" xml:space="preserve"><value>Coupon Information</value></data>
+  <data name="CouponDetails_Category" xml:space="preserve"><value>Category:</value></data>
+  <data name="CouponDetails_OriginalPrice" xml:space="preserve"><value>Original Price:</value></data>
+  <data name="CouponDetails_Paid" xml:space="preserve"><value>Paid:</value></data>
+  <data name="CouponDetails_Savings" xml:space="preserve"><value>Savings:</value></data>
+  <data name="CouponDetails_Dates" xml:space="preserve"><value>Dates</value></data>
+  <data name="CouponDetails_ReservedAt" xml:space="preserve"><value>Reserved:</value></data>
+  <data name="CouponDetails_PurchasedAt" xml:space="preserve"><value>Purchased:</value></data>
+  <data name="CouponDetails_UsedAt" xml:space="preserve"><value>Used:</value></data>
+  <data name="CouponDetails_ValidFrom" xml:space="preserve"><value>Valid from:</value></data>
+  <data name="CouponDetails_ValidTo" xml:space="preserve"><value>Valid to:</value></data>
+  <data name="CouponDetails_Actions" xml:space="preserve"><value>Actions</value></data>
+  <data name="CouponDetails_ConfirmCancel" xml:space="preserve"><value>Do you want to cancel the reservation?</value></data>
+  <data name="CouponDetails_CancelReservation" xml:space="preserve"><value>Cancel Reservation</value></data>
+  <data name="CouponDetails_CompletePurchase" xml:space="preserve"><value>Complete Purchase</value></data>
+  <data name="CouponDetails_ConfirmUsed" xml:space="preserve"><value>Mark this coupon as used?</value></data>
+  <data name="CouponDetails_MarkUsed" xml:space="preserve"><value>Mark as Used</value></data>
+  <data name="CouponDetails_MarkUsedHint" xml:space="preserve"><value>Mark as used only when you show the code to the merchant</value></data>
+  <data name="CouponDetails_NoActions" xml:space="preserve"><value>No available actions</value></data>
+  <data name="CouponDetails_HowToUse" xml:space="preserve"><value>How to Use?</value></data>
+  <data name="CouponDetails_Step1" xml:space="preserve"><value>Visit</value></data>
+  <data name="CouponDetails_Step2" xml:space="preserve"><value>Show this coupon code:</value></data>
+  <data name="CouponDetails_Step3" xml:space="preserve"><value>Get {0}% discount</value></data>
+  <data name="CouponDetails_Step4" xml:space="preserve"><value>The coupon will be automatically marked as used</value></data>
+  <data name="CouponDetails_CodeCopied" xml:space="preserve"><value>Code copied: </value></data>
+
   <!-- ==================== ROLE LABELS ==================== -->
   <data name="Role_Administrator" xml:space="preserve"><value>Administrator</value></data>
   <data name="Role_Merchant" xml:space="preserve"><value>Merchant</value></data>

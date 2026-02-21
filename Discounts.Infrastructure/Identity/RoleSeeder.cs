@@ -25,7 +25,7 @@ public static class RoleSeeder
     private static async Task CreateDefaultAdminAsync(UserManager<ApplicationUser> userManager)
     {
         const string adminEmail = "admin@gmail.com";
-        const string adminPassword = "Admin123123@"; 
+        const string adminPassword = "Aa123123@";
 
         var adminUser = await userManager.FindByEmailAsync(adminEmail).ConfigureAwait(false);
         if (adminUser == null)

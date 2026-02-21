@@ -131,7 +131,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync().ConfigureAwait(false);
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Customer");
     }
 
     [HttpGet]

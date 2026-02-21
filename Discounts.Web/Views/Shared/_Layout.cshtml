@@ -19,10 +19,10 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <nav class="navbar navbar-expand-lg swoop-navbar">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold" asp-controller="Customer" asp-action="Index">
-                    <i class="fas fa-percent"></i> Discounts.ge
+                <a class="navbar-brand" asp-controller="Customer" asp-action="Index">
+                    Discounts<span style="color:var(--swoop-red)">.</span>ge
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                         aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,7 @@
                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-shield-alt"></i> @L["Nav_Administration"]
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-dark">
+                                <ul class="dropdown-menu">
                                     <li>
                                         <a class="dropdown-item" asp-controller="Admin" asp-action="Index">
                                             <i class="fas fa-tachometer-alt"></i> @L["Nav_Dashboard"]
@@ -106,7 +106,7 @@
                     </ul>
 
                     <!-- Right navigation — auth + language -->
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center gap-1">
                         <partial name="_CultureSwitcher" />
 
                         @if (User.Identity?.IsAuthenticated == true)
@@ -116,7 +116,7 @@
                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-user-circle"></i> @User.Identity.Name
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                                <ul class="dropdown-menu dropdown-menu-end">
                                     @if (User.IsInRole("Customer"))
                                     {
                                         <li>
@@ -148,12 +148,13 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Login">
+                                <a class="btn-swoop-login" asp-controller="Account" asp-action="Login">
                                     <i class="fas fa-sign-in-alt"></i> @L["Nav_Login"]
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="btn btn-outline-light btn-sm ms-2 mt-1" asp-controller="Account" asp-action="Register">
+                            <li class="nav-item ms-1">
+                                <a class="btn btn-dark btn-sm" style="border-radius:50px;font-weight:700;"
+                                   asp-controller="Account" asp-action="Register">
                                     <i class="fas fa-user-plus"></i> @L["Nav_Register"]
                                 </a>
                             </li>
@@ -164,17 +165,19 @@
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3 mt-3">
-            @RenderBody()
-        </main>
+    <div class="main-content">
+        <div class="container-fluid px-3 px-md-4">
+            <main role="main" class="pb-4 pt-3">
+                @RenderBody()
+            </main>
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted bg-dark text-white-50">
+    <footer class="footer">
         <div class="container d-flex justify-content-between align-items-center">
-            <span>&copy; 2026 Discounts.ge</span>
+            <span>&copy; 2026 <strong style="color:var(--swoop-yellow)">Discounts.ge</strong></span>
             <span>
-                <a class="text-white-50 text-decoration-none" asp-controller="Home" asp-action="Privacy">
+                <a asp-controller="Home" asp-action="Privacy">
                     @L["Nav_Privacy"]
                 </a>
             </span>

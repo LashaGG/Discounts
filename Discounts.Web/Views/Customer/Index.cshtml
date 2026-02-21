@@ -10,34 +10,37 @@
 @* Hero section for guests on the landing page *@
 @if (User.Identity?.IsAuthenticated != true && !isFiltering)
 {
-    <div class="hero-section rounded-3 mb-4 text-center">
-        <h1><i class="fas fa-percent"></i> Discounts.ge</h1>
-        <p class="lead mb-4">@L["Browse_HeroText"]</p>
-        <div class="d-flex gap-3 justify-content-center">
-            <a asp-controller="Account" asp-action="Register" asp-route-role="Customer"
-               class="btn btn-light btn-lg">
-                <i class="fas fa-user-plus"></i> @L["Nav_Register"]
-            </a>
-            <a asp-controller="Account" asp-action="Login"
-               class="btn btn-outline-light btn-lg">
-                <i class="fas fa-sign-in-alt"></i> @L["Nav_Login"]
-            </a>
+    <div class="hero-section mb-0">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8 text-center text-md-start">
+                    <h1>Discounts<span style="color:var(--swoop-red)">.</span>ge</h1>
+                    <p class="lead mb-3">@L["Browse_HeroText"]</p>
+                    <a asp-controller="Account" asp-action="Register" asp-route-role="Customer"
+                       class="btn btn-dark btn-lg" style="border-radius:50px;font-weight:700;">
+                        <i class="fas fa-user-plus me-1"></i> @L["Nav_Register"]
+                    </a>
+                </div>
+                <div class="col-md-4 text-center d-none d-md-block">
+                    <i class="fas fa-percent" style="font-size:8rem;color:var(--swoop-red);opacity:0.15;"></i>
+                </div>
+            </div>
         </div>
     </div>
 }
 
-<div class="container-fluid mt-2">
+<div class="container-fluid py-3">
     <!-- Header & Search -->
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-7">
-            <h2><i class="fas fa-tags"></i> @L["Browse_Title"]</h2>
-            <p class="text-muted mb-0">@L["Browse_Subtitle"]</p>
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-6">
+            <h2 class="section-heading mb-1">@L["Browse_Title"]</h2>
+            <p class="text-muted mb-0 small">@L["Browse_Subtitle"]</p>
         </div>
-        <div class="col-md-5">
-            <form asp-action="Index" method="get" class="d-flex">
-                <input type="text" name="search" class="form-control"
+        <div class="col-md-6">
+            <form asp-action="Index" method="get" class="d-flex gap-2">
+                <input type="text" name="search" class="form-control swoop-search flex-grow-1"
                        placeholder="@L["Browse_SearchPlaceholder"].Value" value="@searchTerm" />
-                <button type="submit" class="btn btn-primary ms-2">
+                <button type="submit" class="btn swoop-search-btn px-3">
                     <i class="fas fa-search"></i>
                 </button>
             </form>
@@ -47,15 +50,15 @@
     <!-- Categories -->
     @if (categories.Any())
     {
-        <div class="mb-4">
+        <div class="mb-4 py-2">
             <a asp-action="Index"
-               class="category-pill @(selectedCategoryId == null ? "bg-primary text-white" : "")">
-                <i class="fas fa-th"></i> @L["Common_All"]
+               class="category-pill @(selectedCategoryId == null ? "bg-primary" : "")">
+                <i class="fas fa-th-large"></i> @L["Common_All"]
             </a>
             @foreach (var category in categories)
             {
                 <a asp-action="Index" asp-route-categoryId="@category.Id"
-                   class="category-pill @(selectedCategoryId == category.Id ? "bg-primary text-white" : "")">
+                   class="category-pill @(selectedCategoryId == category.Id ? "bg-primary" : "")">
                     @if (!string.IsNullOrEmpty(category.IconClass))
                     {
                         <i class="@category.IconClass"></i>
@@ -79,7 +82,7 @@
                 <form asp-action="Filter" method="post">
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label">@L["Common_Category"]</label>
+                            <label class="form-label fw-semibold">@L["Common_Category"]</label>
                             <select name="CategoryId" class="form-select">
                                 <option value="">@L["Common_All"]</option>
                                 @foreach (var category in categories)
@@ -89,19 +92,19 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">@L["Common_MinPrice"]</label>
+                            <label class="form-label fw-semibold">@L["Common_MinPrice"]</label>
                             <input type="number" name="MinPrice" class="form-control" step="0.01" />
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">@L["Common_MaxPrice"]</label>
+                            <label class="form-label fw-semibold">@L["Common_MaxPrice"]</label>
                             <input type="number" name="MaxPrice" class="form-control" step="0.01" />
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">@L["Common_MinDiscountPercent"]</label>
+                            <label class="form-label fw-semibold">@L["Common_MinDiscountPercent"]</label>
                             <input type="number" name="MinDiscount" class="form-control" min="0" max="100" />
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">@L["Common_SortBy"]</label>
+                            <label class="form-label fw-semibold">@L["Common_SortBy"]</label>
                             <select name="SortBy" class="form-select">
                                 <option value="date">@L["Common_Date"]</option>
                                 <option value="price">@L["Common_Price"]</option>
@@ -113,7 +116,7 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-search"></i> @L["Common_Search"]
                         </button>
-                        <a asp-action="Index" class="btn btn-secondary ms-1">
+                        <a asp-action="Index" class="btn btn-outline-secondary ms-1">
                             <i class="fas fa-redo"></i> @L["Common_Clear"]
                         </a>
                     </div>
@@ -125,69 +128,59 @@
     <!-- Discounts Grid -->
     @if (!Model.Any())
     {
-        <div class="alert alert-info text-center py-5">
-            <i class="fas fa-search fa-3x mb-3 d-block"></i>
-            <h5>@L["Browse_NoResults"]</h5>
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-3x mb-3 d-block" style="color:var(--swoop-gray-mid)"></i>
+            <h5 class="fw-bold">@L["Browse_NoResults"]</h5>
             <p class="mb-0 text-muted">@L["Browse_TryOther"]</p>
         </div>
     }
     else
     {
-        <div class="row">
+        <div class="row g-3">
             @foreach (var discount in Model)
             {
-                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm card-hover position-relative">
-                        <span class="discount-badge badge bg-danger">
-                            -@discount.DiscountPercentage%
-                        </span>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card h-100 card-hover position-relative">
+                        <!-- Discount badge -->
+                        <span class="discount-badge">-@discount.DiscountPercentage%</span>
 
                         @if (!string.IsNullOrEmpty(discount.ImageUrl))
                         {
                             <img src="@discount.ImageUrl" class="card-img-top" alt="@discount.Title"
-                                 style="height: 200px; object-fit: cover;">
+                                 style="height: 190px; object-fit: cover;">
                         }
                         else
                         {
-                            <div class="bg-light text-center d-flex align-items-center justify-content-center" style="height: 200px;">
-                                <i class="fas fa-image fa-3x text-muted"></i>
+                            <div class="d-flex align-items-center justify-content-center"
+                                 style="height:190px;background:var(--swoop-gray);">
+                                <i class="fas fa-image fa-3x" style="color:var(--swoop-gray-mid)"></i>
                             </div>
                         }
 
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title mb-1">@discount.Title</h5>
-                            <p class="card-text text-muted small mb-2">
-                                <i class="fas fa-building"></i> @discount.MerchantName
+                        <div class="card-body d-flex flex-column p-3">
+                            <p class="text-muted small mb-1" style="font-size:0.78rem;">
+                                <i class="fas fa-store"></i> @discount.MerchantName
                             </p>
-                            <p class="card-text small">
-                                @if (discount.Description.Length > 80)
-                                {
-                                    @discount.Description.Substring(0, 80)@:...
-                                }
-                                else
-                                {
-                                    @discount.Description
-                                }
-                            </p>
+                            <h6 class="card-title mb-2" style="font-size:0.95rem;line-height:1.3;">
+                                @(discount.Title.Length > 55 ? discount.Title.Substring(0, 55) + "…" : discount.Title)
+                            </h6>
 
                             <div class="mt-auto">
+                                <!-- Prices -->
                                 <div class="mb-2">
-                                    <del class="text-muted small">@discount.OriginalPrice.ToString("C")</del>
-                                    <span class="fs-4 fw-bold text-success">@discount.DiscountedPrice.ToString("C")</span>
+                                    <span class="price-original me-2">@discount.OriginalPrice.ToString("C")</span>
+                                    <span class="price-discounted">@discount.DiscountedPrice.ToString("C")</span>
                                 </div>
 
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <small class="text-muted">
-                                        <i class="fas fa-ticket-alt"></i> @L["Common_Remaining"]: @discount.AvailableCoupons
-                                    </small>
-                                    <small class="text-muted">
-                                        <i class="fas fa-calendar-alt"></i> @discount.ValidTo.ToString("dd/MM")
-                                    </small>
+                                <!-- Remaining info -->
+                                <div class="d-flex justify-content-between align-items-center mb-3" style="font-size:0.8rem;color:var(--swoop-muted);">
+                                    <span><i class="fas fa-ticket-alt me-1"></i>@L["Common_Remaining"]: <strong>@discount.AvailableCoupons</strong></span>
+                                    <span><i class="fas fa-calendar-alt me-1"></i>@discount.ValidTo.ToString("dd/MM")</span>
                                 </div>
 
                                 <a asp-action="Details" asp-route-id="@discount.Id"
-                                   class="btn btn-primary w-100">
-                                    <i class="fas fa-info-circle"></i> @L["Common_Details"]
+                                   class="btn btn-primary w-100 btn-sm">
+                                    @L["Common_Details"]
                                 </a>
                             </div>
                         </div>

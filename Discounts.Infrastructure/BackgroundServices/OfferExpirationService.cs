@@ -4,10 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Discounts.Infrastructure.BackgroundServices;
 
-/// <summary>
-/// Periodically marks active discounts as Expired when their ValidTo date has passed,
-/// and expires any remaining available coupons tied to those discounts.
-/// </summary>
 public class OfferExpirationService : BackgroundService
 {
     private readonly ILogger<OfferExpirationService> _logger;
@@ -35,7 +31,6 @@ public class OfferExpirationService : BackgroundService
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
-                // Graceful shutdown — not an error
             }
             catch (Exception ex)
             {

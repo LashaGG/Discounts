@@ -120,8 +120,7 @@ public class DiscountRepository : IDiscountRepository
             .Include(d => d.Merchant)
             .Where(d => d.Status == DiscountStatus.Active &&
                        d.ValidFrom <= now &&
-                       d.ValidTo >= now &&
-                       d.AvailableCoupons > 0)
+                       d.ValidTo >= now)
             .OrderByDescending(d => d.CreatedAt)
             .ToListAsync(ct)
             .ConfigureAwait(false);
@@ -137,8 +136,7 @@ public class DiscountRepository : IDiscountRepository
             .Where(d => d.CategoryId == categoryId &&
                        d.Status == DiscountStatus.Active &&
                        d.ValidFrom <= now &&
-                       d.ValidTo >= now &&
-                       d.AvailableCoupons > 0)
+                       d.ValidTo >= now)
             .OrderByDescending(d => d.CreatedAt)
             .ToListAsync(ct)
             .ConfigureAwait(false);
@@ -154,7 +152,6 @@ public class DiscountRepository : IDiscountRepository
             .Where(d => d.Status == DiscountStatus.Active &&
                        d.ValidFrom <= now &&
                        d.ValidTo >= now &&
-                       d.AvailableCoupons > 0 &&
                        (d.Title.Contains(searchTerm) ||
                         d.Description.Contains(searchTerm) ||
                         d.Category.Name.Contains(searchTerm)))
@@ -172,8 +169,7 @@ public class DiscountRepository : IDiscountRepository
             .Include(d => d.Merchant)
             .Where(d => d.Status == DiscountStatus.Active &&
                        d.ValidFrom <= now &&
-                       d.ValidTo >= now &&
-                       d.AvailableCoupons > 0);
+                       d.ValidTo >= now);
 
         if (filter.CategoryId.HasValue)
             query = query.Where(d => d.CategoryId == filter.CategoryId.Value);

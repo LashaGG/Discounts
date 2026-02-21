@@ -275,6 +275,67 @@
   <data name="Status_Used" xml:space="preserve"><value>გამოყენებული</value></data>
   <data name="Status_Deactivated" xml:space="preserve"><value>დეაქტივირებული</value></data>
 
+  <!-- ==================== PURCHASE SUCCESS ==================== -->
+  <data name="PurchaseSuccess_Title" xml:space="preserve"><value>შეძენა წარმატებულია!</value></data>
+  <data name="PurchaseSuccess_Heading" xml:space="preserve"><value>შეძენა წარმატებულია!</value></data>
+  <data name="PurchaseSuccess_CouponReady" xml:space="preserve"><value>თქვენი კუპონი მზადაა გამოსაყენებლად</value></data>
+  <data name="PurchaseSuccess_YourCoupon" xml:space="preserve"><value>თქვენი კუპონი</value></data>
+  <data name="PurchaseSuccess_CouponCode" xml:space="preserve"><value>კუპონის კოდი</value></data>
+  <data name="PurchaseSuccess_OriginalPrice" xml:space="preserve"><value>ორიგინალური ფასი:</value></data>
+  <data name="PurchaseSuccess_Paid" xml:space="preserve"><value>გადახდილი:</value></data>
+  <data name="PurchaseSuccess_Savings" xml:space="preserve"><value>დაზოგვა:</value></data>
+  <data name="PurchaseSuccess_PurchaseDate" xml:space="preserve"><value>შეძენის თარიღი:</value></data>
+  <data name="PurchaseSuccess_ValidUntil" xml:space="preserve"><value>ვალიდურია:</value></data>
+  <data name="PurchaseSuccess_ImportantNote" xml:space="preserve"><value>მნიშვნელოვანი:</value></data>
+  <data name="PurchaseSuccess_SaveCode" xml:space="preserve"><value>კუპონის კოდი შეინახეთ უსაფრთხოდ. აჩვენეთ ის მერჩანტს გამოყენებისას.</value></data>
+  <data name="PurchaseSuccess_MoreDiscounts" xml:space="preserve"><value>მეტი ფასდაკლება</value></data>
+  <data name="PurchaseSuccess_MyCoupons" xml:space="preserve"><value>ჩემი კუპონები</value></data>
+  <data name="PurchaseSuccess_CouponDetails" xml:space="preserve"><value>კუპონის დეტალები</value></data>
+  <data name="PurchaseSuccess_HowToUse" xml:space="preserve"><value>როგორ გამოვიყენო?</value></data>
+  <data name="PurchaseSuccess_Step1" xml:space="preserve"><value>ეწვიეთ მერჩანტის ლოკაციას ან ვებსაიტს</value></data>
+  <data name="PurchaseSuccess_Step2" xml:space="preserve"><value>აჩვენეთ კუპონის კოდი:</value></data>
+  <data name="PurchaseSuccess_Step3" xml:space="preserve"><value>მიიღეთ ფასდაკლება</value></data>
+  <data name="PurchaseSuccess_Step4" xml:space="preserve"><value>კუპონი ავტომატურად მონიშნავს როგორც გამოყენებული</value></data>
+
+  <!-- ==================== COUPON DETAILS ==================== -->
+  <data name="CouponDetails_Title" xml:space="preserve"><value>კუპონის დეტალები</value></data>
+  <data name="CouponDetails_MyCoupons" xml:space="preserve"><value>ჩემი კუპონები</value></data>
+  <data name="CouponDetails_CouponCode" xml:space="preserve"><value>კუპონის კოდი</value></data>
+  <data name="CouponDetails_Copy" xml:space="preserve"><value>კოპირება</value></data>
+  <data name="CouponDetails_Reserved" xml:space="preserve"><value>დაჯავშნილია!</value></data>
+  <data name="CouponDetails_ReservedMsg" xml:space="preserve"><value>გთხოვთ დაასრულოთ შეძენა ან გააუქმოთ ჯავშანი.</value></data>
+  <data name="CouponDetails_ExpiredTitle" xml:space="preserve"><value>ვადა გასულია!</value></data>
+  <data name="CouponDetails_ExpiredMsg" xml:space="preserve"><value>ეს კუპონი აღარ არის გამოსაყენებელი.</value></data>
+  <data name="CouponDetails_ActiveTitle" xml:space="preserve"><value>აქტიური!</value></data>
+  <data name="CouponDetails_ActiveMsg" xml:space="preserve"><value>თქვენ შეგიძლიათ გამოიყენოთ ეს კუპონი.</value></data>
+  <data name="CouponDetails_UsedTitle" xml:space="preserve"><value>გამოყენებულია!</value></data>
+  <data name="CouponDetails_UsedMsg" xml:space="preserve"><value>გმადლობთ ჩვენი სერვისით სარგებლობისთვის.</value></data>
+  <data name="CouponDetails_Info" xml:space="preserve"><value>კუპონის ინფორმაცია</value></data>
+  <data name="CouponDetails_Category" xml:space="preserve"><value>კატეგორია:</value></data>
+  <data name="CouponDetails_OriginalPrice" xml:space="preserve"><value>ორიგინალური ფასი:</value></data>
+  <data name="CouponDetails_Paid" xml:space="preserve"><value>გადახდილი:</value></data>
+  <data name="CouponDetails_Savings" xml:space="preserve"><value>დაზოგვა:</value></data>
+  <data name="CouponDetails_Dates" xml:space="preserve"><value>თარიღები</value></data>
+  <data name="CouponDetails_ReservedAt" xml:space="preserve"><value>დაჯავშნილია:</value></data>
+  <data name="CouponDetails_PurchasedAt" xml:space="preserve"><value>შეძენილია:</value></data>
+  <data name="CouponDetails_UsedAt" xml:space="preserve"><value>გამოყენებულია:</value></data>
+  <data name="CouponDetails_ValidFrom" xml:space="preserve"><value>ვალიდური დან:</value></data>
+  <data name="CouponDetails_ValidTo" xml:space="preserve"><value>ვალიდური მდე:</value></data>
+  <data name="CouponDetails_Actions" xml:space="preserve"><value>მოქმედებები</value></data>
+  <data name="CouponDetails_ConfirmCancel" xml:space="preserve"><value>გსურთ ჯავშნის გაუქმება?</value></data>
+  <data name="CouponDetails_CancelReservation" xml:space="preserve"><value>ჯავშნის გაუქმება</value></data>
+  <data name="CouponDetails_CompletePurchase" xml:space="preserve"><value>შეძენის დასრულება</value></data>
+  <data name="CouponDetails_ConfirmUsed" xml:space="preserve"><value>მონიშნოთ ეს კუპონი როგორც გამოყენებული?</value></data>
+  <data name="CouponDetails_MarkUsed" xml:space="preserve"><value>მონიშვნა როგორც გამოყენებული</value></data>
+  <data name="CouponDetails_MarkUsedHint" xml:space="preserve"><value>მონიშნეთ გამოყენებულად მხოლოდ მაშინ, როცა მერჩანტს აჩვენებთ კოდს</value></data>
+  <data name="CouponDetails_NoActions" xml:space="preserve"><value>ხელმისაწვდომი მოქმედებები არ არის</value></data>
+  <data name="CouponDetails_HowToUse" xml:space="preserve"><value>როგორ გამოვიყენო?</value></data>
+  <data name="CouponDetails_Step1" xml:space="preserve"><value>ეწვიეთ</value></data>
+  <data name="CouponDetails_Step2" xml:space="preserve"><value>აჩვენეთ ეს კუპონის კოდი:</value></data>
+  <data name="CouponDetails_Step3" xml:space="preserve"><value>მიიღეთ {0}% ფასდაკლება</value></data>
+  <data name="CouponDetails_Step4" xml:space="preserve"><value>კუპონი ავტომატურად მონიშნება როგორც გამოყენებული</value></data>
+  <data name="CouponDetails_CodeCopied" xml:space="preserve"><value>კოდი დაკოპირდა: </value></data>
+
   <!-- ==================== ROLE LABELS ==================== -->
   <data name="Role_Administrator" xml:space="preserve"><value>ადმინისტრატორი</value></data>
   <data name="Role_Merchant" xml:space="preserve"><value>მერჩანტი</value></data>

@@ -2,6 +2,7 @@
 @{
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
     var currentCulture = requestCulture?.RequestCulture.UICulture.Name ?? "ka";
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
 }
 
 <li class="nav-item dropdown">
@@ -10,11 +11,11 @@
         <i class="fas fa-globe"></i>
         @(currentCulture == "ka" ? "ქართ" : "ENG")
     </a>
-    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+    <ul class="dropdown-menu dropdown-menu-end">
         <li>
             <form asp-controller="Culture" asp-action="SetLanguage" method="post">
                 <input type="hidden" name="culture" value="ka" />
-                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
                 <button type="submit" class="dropdown-item @(currentCulture == "ka" ? "active" : "")">
                     🇬🇪 ქართული
                 </button>
@@ -23,7 +24,7 @@
         <li>
             <form asp-controller="Culture" asp-action="SetLanguage" method="post">
                 <input type="hidden" name="culture" value="en" />
-                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
                 <button type="submit" class="dropdown-item @(currentCulture == "en" ? "active" : "")">
                     🇬🇧 English
                 </button>

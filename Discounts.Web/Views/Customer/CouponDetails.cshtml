@@ -1,13 +1,13 @@
 @model CouponDto
 @{
-    ViewData["Title"] = "კუპონის დეტალები";
+    ViewData["Title"] = L["CouponDetails_Title"].Value;
 }
 
 <div class="container mt-4">
     <div class="row mb-3">
         <div class="col-12">
             <a asp-action="MyCoupons" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> ჩემი კუპონები
+                <i class="fas fa-arrow-left"></i> @L["CouponDetails_MyCoupons"]
             </a>
         </div>
     </div>
@@ -48,10 +48,10 @@
 
                     <!-- Coupon Code -->
                     <div class="coupon-code-large p-4 bg-light rounded text-center mb-3">
-                        <small class="text-muted d-block">კუპონის კოდი</small>
+                        <small class="text-muted d-block">@L["CouponDetails_CouponCode"]</small>
                         <h1 class="mb-0 font-monospace">@Model.Code</h1>
                         <button class="btn btn-sm btn-outline-primary mt-2" onclick="copyCode('@Model.Code')">
-                            <i class="fas fa-copy"></i> კოპირება
+                            <i class="fas fa-copy"></i> @L["CouponDetails_Copy"]
                         </button>
                     </div>
 
@@ -59,28 +59,28 @@
                     {
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle"></i>
-                            <strong>დაჯავშნილია!</strong> გთხოვთ დაასრულოთ შეძენა ან გააუქმოთ ჯავშანი.
+                            <strong>@L["CouponDetails_Reserved"]</strong> @L["CouponDetails_ReservedMsg"]
                         </div>
                     }
                     else if (Model.Status == CouponStatus.Purchased && Model.IsExpired)
                     {
                         <div class="alert alert-danger">
                             <i class="fas fa-times-circle"></i>
-                            <strong>ვადა გასულია!</strong> ეს კუპონი აღარ არის გამოსაყენებელი.
+                            <strong>@L["CouponDetails_ExpiredTitle"]</strong> @L["CouponDetails_ExpiredMsg"]
                         </div>
                     }
                     else if (Model.Status == CouponStatus.Purchased && Model.IsActive)
                     {
                         <div class="alert alert-success">
                             <i class="fas fa-check-circle"></i>
-                            <strong>აქტიური!</strong> თქვენ შეგიძლიათ გამოიყენოთ ეს კუპონი.
+                            <strong>@L["CouponDetails_ActiveTitle"]</strong> @L["CouponDetails_ActiveMsg"]
                         </div>
                     }
                     else if (Model.Status == CouponStatus.Used)
                     {
                         <div class="alert alert-info">
                             <i class="fas fa-check-double"></i>
-                            <strong>გამოყენებულია!</strong> გმადლობთ ჩვენი სერვისით სარგებლობისთვის.
+                            <strong>@L["CouponDetails_UsedTitle"]</strong> @L["CouponDetails_UsedMsg"]
                         </div>
                     }
                 </div>
@@ -91,20 +91,20 @@
         <div class="col-md-6">
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5><i class="fas fa-info-circle"></i> კუპონის ინფორმაცია</h5>
+                    <h5><i class="fas fa-info-circle"></i> @L["CouponDetails_Info"]</h5>
                 </div>
                 <div class="card-body">
                     <dl class="row mb-0">
-                        <dt class="col-sm-5">კატეგორია:</dt>
+                        <dt class="col-sm-5">@L["CouponDetails_Category"]</dt>
                         <dd class="col-sm-7">@Model.CategoryName</dd>
 
-                        <dt class="col-sm-5">ორიგინალური ფასი:</dt>
+                        <dt class="col-sm-5">@L["CouponDetails_OriginalPrice"]</dt>
                         <dd class="col-sm-7"><del>@Model.OriginalPrice.ToString("C")</del></dd>
 
-                        <dt class="col-sm-5">გადახდილი:</dt>
+                        <dt class="col-sm-5">@L["CouponDetails_Paid"]</dt>
                         <dd class="col-sm-7"><strong>@Model.DiscountedPrice.ToString("C")</strong></dd>
 
-                        <dt class="col-sm-5">დაზოგვა:</dt>
+                        <dt class="col-sm-5">@L["CouponDetails_Savings"]</dt>
                         <dd class="col-sm-7 text-success">
                             <strong>@((Model.OriginalPrice - Model.DiscountedPrice).ToString("C")) (-@Model.DiscountPercentage%)</strong>
                         </dd>
@@ -114,32 +114,32 @@
 
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5><i class="fas fa-calendar-alt"></i> თარიღები</h5>
+                    <h5><i class="fas fa-calendar-alt"></i> @L["CouponDetails_Dates"]</h5>
                 </div>
                 <div class="card-body">
                     <dl class="row mb-0">
                         @if (Model.ReservedAt.HasValue)
                         {
-                            <dt class="col-sm-5">დაჯავშნილია:</dt>
+                            <dt class="col-sm-5">@L["CouponDetails_ReservedAt"]</dt>
                             <dd class="col-sm-7">@Model.ReservedAt.Value.ToString("dd/MM/yyyy HH:mm")</dd>
                         }
 
                         @if (Model.PurchasedAt.HasValue)
                         {
-                            <dt class="col-sm-5">შეძენილია:</dt>
+                            <dt class="col-sm-5">@L["CouponDetails_PurchasedAt"]</dt>
                             <dd class="col-sm-7">@Model.PurchasedAt.Value.ToString("dd/MM/yyyy HH:mm")</dd>
                         }
 
                         @if (Model.UsedAt.HasValue)
                         {
-                            <dt class="col-sm-5">გამოყენებულია:</dt>
+                            <dt class="col-sm-5">@L["CouponDetails_UsedAt"]</dt>
                             <dd class="col-sm-7">@Model.UsedAt.Value.ToString("dd/MM/yyyy HH:mm")</dd>
                         }
 
-                        <dt class="col-sm-5">ვალიდური დან:</dt>
+                        <dt class="col-sm-5">@L["CouponDetails_ValidFrom"]</dt>
                         <dd class="col-sm-7">@Model.ValidFrom.ToString("dd/MM/yyyy")</dd>
 
-                        <dt class="col-sm-5">ვალიდური მდე:</dt>
+                        <dt class="col-sm-5">@L["CouponDetails_ValidTo"]</dt>
                         <dd class="col-sm-7">@Model.ValidTo.ToString("dd/MM/yyyy")</dd>
                     </dl>
                 </div>
@@ -148,7 +148,7 @@
             <!-- Actions -->
             <div class="card">
                 <div class="card-header">
-                    <h5><i class="fas fa-tasks"></i> მოქმედებები</h5>
+                    <h5><i class="fas fa-tasks"></i> @L["CouponDetails_Actions"]</h5>
                 </div>
                 <div class="card-body">
                     @if (Model.Status == CouponStatus.Reserved)
@@ -156,13 +156,13 @@
                         <form asp-action="CancelReservation" method="post">
                             <input type="hidden" name="couponId" value="@Model.Id" />
                             <button type="submit" class="btn btn-warning w-100 mb-2" 
-                                    onclick="return confirm('გსურთ ჯავშნის გაუქმება?')">
-                                <i class="fas fa-times"></i> ჯავშნის გაუქმება
+                                    onclick="return confirm('@L["CouponDetails_ConfirmCancel"]')">
+                                <i class="fas fa-times"></i> @L["CouponDetails_CancelReservation"]
                             </button>
                         </form>
                         <a asp-action="Purchase" asp-route-discountId="@Model.DiscountId" 
                            class="btn btn-success w-100">
-                            <i class="fas fa-shopping-cart"></i> შეძენის დასრულება
+                            <i class="fas fa-shopping-cart"></i> @L["CouponDetails_CompletePurchase"]
                         </a>
                     }
                     else if (Model.Status == CouponStatus.Purchased && Model.IsActive)
@@ -170,18 +170,18 @@
                         <form asp-action="MarkAsUsed" method="post">
                             <input type="hidden" name="id" value="@Model.Id" />
                             <button type="submit" class="btn btn-primary w-100" 
-                                    onclick="return confirm('მონიშნოთ ეს კუპონი როგორც გამოყენებული?')">
-                                <i class="fas fa-check"></i> მონიშვნა როგორც გამოყენებული
+                                    onclick="return confirm('@L["CouponDetails_ConfirmUsed"]')">
+                                <i class="fas fa-check"></i> @L["CouponDetails_MarkUsed"]
                             </button>
                         </form>
                         <small class="text-muted d-block mt-2 text-center">
-                            მონიშნეთ გამოყენებულად მხოლოდ მაშინ, როცა მერჩანტს აჩვენებთ კოდს
+                            @L["CouponDetails_MarkUsedHint"]
                         </small>
                     }
                     else
                     {
                         <p class="text-muted text-center mb-0">
-                            <i class="fas fa-info-circle"></i> ხელმისაწვდომი მოქმედებები არ არის
+                            <i class="fas fa-info-circle"></i> @L["CouponDetails_NoActions"]
                         </p>
                     }
                 </div>
@@ -196,14 +196,14 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-info text-white">
-                        <h5 class="mb-0"><i class="fas fa-lightbulb"></i> როგორ გამოვიყენო?</h5>
+                        <h5 class="mb-0"><i class="fas fa-lightbulb"></i> @L["CouponDetails_HowToUse"]</h5>
                     </div>
                     <div class="card-body">
                         <ol class="mb-0">
-                            <li>ეწვიეთ <strong>@Model.MerchantName</strong>-ს</li>
-                            <li>აჩვენეთ ეს კუპონის კოდი: <code class="fs-5">@Model.Code</code></li>
-                            <li>მიიღეთ @Model.DiscountPercentage% ფასდაკლება</li>
-                            <li>კუპონი ავტომატურად მონიშნება როგორც გამოყენებული</li>
+                            <li>@L["CouponDetails_Step1"] <strong>@Model.MerchantName</strong></li>
+                            <li>@L["CouponDetails_Step2"] <code class="fs-5">@Model.Code</code></li>
+                            <li>@string.Format(L["CouponDetails_Step3"].Value, Model.DiscountPercentage)</li>
+                            <li>@L["CouponDetails_Step4"]</li>
                         </ol>
                     </div>
                 </div>
@@ -216,7 +216,7 @@
     <script>
         function copyCode(code) {
             navigator.clipboard.writeText(code).then(function() {
-                alert('კოდი დაკოპირდა: ' + code);
+                alert('@L["CouponDetails_CodeCopied"].Value' + code);
             });
         }
     </script>

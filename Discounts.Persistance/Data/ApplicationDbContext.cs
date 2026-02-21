@@ -48,7 +48,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Description).IsRequired().HasMaxLength(2000);
-            entity.Property(e => e.ImageUrl).HasMaxLength(500);
+            entity.Property(e => e.ImageUrl).HasMaxLength(2000);
             entity.Property(e => e.OriginalPrice).HasColumnType("decimal(18,2)");
             entity.Property(e => e.DiscountedPrice).HasColumnType("decimal(18,2)");
 

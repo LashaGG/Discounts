@@ -37,7 +37,13 @@ public static class ApplicationBuilderExtensions
         app.UseHttpsRedirection();
         app.UseStaticFiles();
 
-        var supportedCultures = new[] { new CultureInfo("ka"), new CultureInfo("en") };
+        var kaCulture = new CultureInfo("ka");
+        kaCulture.NumberFormat.CurrencySymbol = "$";
+
+        var enCulture = new CultureInfo("en");
+        enCulture.NumberFormat.CurrencySymbol = "$";
+
+        var supportedCultures = new[] { kaCulture, enCulture };
         app.UseRequestLocalization(new RequestLocalizationOptions
         {
             DefaultRequestCulture = new RequestCulture("ka"),
