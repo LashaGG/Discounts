@@ -22,6 +22,7 @@ public class CategoryRepository : ICategoryRepository
     public async Task<IEnumerable<Category>> GetAllAsync(CancellationToken ct = default)
     {
         return await _context.Categories
+            .AsNoTracking()
             .OrderBy(c => c.Name)
             .ToListAsync(ct)
             .ConfigureAwait(false);
@@ -30,6 +31,7 @@ public class CategoryRepository : ICategoryRepository
     public async Task<IEnumerable<Category>> GetActiveAsync(CancellationToken ct = default)
     {
         return await _context.Categories
+            .AsNoTracking()
             .Where(c => c.IsActive)
             .OrderBy(c => c.Name)
             .ToListAsync(ct)

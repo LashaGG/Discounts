@@ -1,7 +1,7 @@
 using Discounts.API.Middleware;
-using Discounts.Application.Interfaces;
 using Discounts.Infrastructure.Data;
-using Discounts.Infrastructure.Identity;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 
 namespace Discounts.API.Extensions;
@@ -11,14 +11,7 @@ public static class ApplicationBuilderExtensions
 
     public static async Task SeedDataAsync(this WebApplication app)
     {
-        using var scope = app.Services.CreateScope();
-        var services = scope.ServiceProvider;
-
-        await RoleSeeder.SeedRolesAsync(services).ConfigureAwait(false);
-        await CategorySeeder.SeedCategoriesAsync(services).ConfigureAwait(false);
-
-        var settingsRepo = services.GetRequiredService<ISystemSettingsRepository>();
-        await SystemSettingsSeeder.SeedDefaultSettingsAsync(settingsRepo).ConfigureAwait(false);
+        await DataSeeder.SeedAllAsync(app).ConfigureAwait(false);
     }
 
     public static WebApplication UseApiPipeline(this WebApplication app)
@@ -41,6 +34,33 @@ public static class ApplicationBuilderExtensions
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
+        app.UseCustomHealthChecks();
+
+        return app;
+    }
+
+    /// <summary>
+    /// Registers two health-check endpoints:
+    /// <list type="bullet">
+    ///   <item><c>/health/live</c> — liveness probe: no checks, just verifies the process is up.</item>
+    ///   <item><c>/health/ready</c> — readiness probe: runs every registered check and returns a
+    ///     rich JSON report via <see cref="UIResponseWriter"/>.</item>
+    /// </list>
+    /// </summary>
+    public static IApplicationBuilder UseCustomHealthChecks(this IApplicationBuilder app)
+    {
+        // Liveness: no health checks are executed — returns 200 as long as the process is alive.
+        app.UseHealthChecks("/health/live", new HealthCheckOptions
+        {
+            Predicate = _ => false
+        });
+
+        // Readiness: all registered checks run; response formatted for Health Checks UI.
+        app.UseHealthChecks("/health/ready", new HealthCheckOptions
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
 
         return app;
     }

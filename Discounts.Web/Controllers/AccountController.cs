@@ -1,21 +1,18 @@
+using Discounts.Application.Interfaces;
+using Discounts.Application.Models;
 using Discounts.Domain.Constants;
-using Discounts.Domain.Entities.Core;
-using Microsoft.AspNetCore.Identity;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Discounts.Web.Controllers;
 
 public class AccountController : Controller
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IAccountService _accountService;
 
-    public AccountController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+    public AccountController(IAccountService accountService)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
+        _accountService = accountService;
     }
 
     [HttpGet]
@@ -31,36 +28,17 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            var user = new ApplicationUser
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                CompanyName = model.CompanyName,
-                CompanyDescription = model.CompanyDescription
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password).ConfigureAwait(false);
+            var accountModel = model.Adapt<RegisterAccountModel>();
+            var result = await _accountService.RegisterAsync(accountModel).ConfigureAwait(false);
 
             if (result.Succeeded)
             {
-                var roleToAssign = model.Role switch
-                {
-                    Roles.Merchant => Roles.Merchant,
-                    Roles.Customer => Roles.Customer,
-                    _ => Roles.Customer
-                };
-
-                await _userManager.AddToRoleAsync(user, roleToAssign).ConfigureAwait(false);
-                await _signInManager.SignInAsync(user, isPersistent: false).ConfigureAwait(false);
-
-                return RedirectToAction("Index", roleToAssign);
+                return RedirectToAction("Index", result.PrimaryRole);
             }
 
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                ModelState.AddModelError(string.Empty, error);
             }
         }
 
@@ -82,8 +60,8 @@ public class AccountController : Controller
 
         if (ModelState.IsValid)
         {
-            var result = await _signInManager.PasswordSignInAsync(
-                model.Email, model.Password, model.RememberMe, lockoutOnFailure: true).ConfigureAwait(false);
+            var loginModel = model.Adapt<LoginAccountModel>();
+            var result = await _accountService.LoginAsync(loginModel).ConfigureAwait(false);
 
             if (result.Succeeded)
             {
@@ -92,25 +70,13 @@ public class AccountController : Controller
                     return Redirect(returnUrl);
                 }
 
-                // Redirect based on user role
-                var user = await _userManager.FindByEmailAsync(model.Email).ConfigureAwait(false);
-                if (user != null)
+                return result.PrimaryRole switch
                 {
-                    if (await _userManager.IsInRoleAsync(user, Roles.Administrator).ConfigureAwait(false))
-                    {
-                        return RedirectToAction("Index", "Admin");
-                    }
-                    if (await _userManager.IsInRoleAsync(user, Roles.Merchant).ConfigureAwait(false))
-                    {
-                        return RedirectToAction("Index", "Merchant");
-                    }
-                    if (await _userManager.IsInRoleAsync(user, Roles.Customer).ConfigureAwait(false))
-                    {
-                        return RedirectToAction("Index", "Customer");
-                    }
-                }
-
-                return RedirectToAction("Index", "Home");
+                    Roles.Administrator => RedirectToAction("Index", "Admin"),
+                    Roles.Merchant => RedirectToAction("Index", "Merchant"),
+                    Roles.Customer => RedirectToAction("Index", "Customer"),
+                    _ => RedirectToAction("Index", "Home")
+                };
             }
 
             if (result.IsLockedOut)
@@ -130,7 +96,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
-        await _signInManager.SignOutAsync().ConfigureAwait(false);
+        await _accountService.LogoutAsync().ConfigureAwait(false);
         return RedirectToAction("Index", "Customer");
     }
 

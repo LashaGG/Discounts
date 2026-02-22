@@ -99,7 +99,7 @@
                             <a asp-action="MyDiscounts" class="btn btn-secondary">
                                 <i class="fas fa-times"></i> გაუქმება
                             </a>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary" id="btnSubmit">
                                 <i class="fas fa-save"></i> შექმნა
                             </button>
                         </div>
@@ -113,6 +113,15 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        // Prevent double-submit: disable button after the first valid submission
+        $('form').on('submit', function () {
+            if ($(this).valid()) {
+                var $btn = $('#btnSubmit');
+                $btn.prop('disabled', true);
+                $btn.html('<i class="fas fa-spinner fa-spin"></i> იტვირთება...');
+            }
+        });
+
         // Calculate discount percentage
         $('#DiscountedPrice, #OriginalPrice').on('input', function() {
             var original = parseFloat($('#OriginalPrice').val()) || 0;

@@ -14,4 +14,9 @@ public interface IMerchantService
     Task<bool> DeleteDiscountAsync(int discountId, string merchantId, CancellationToken ct = default);
     Task<IEnumerable<SalesHistoryModel>> GetSalesHistoryAsync(int discountId, string merchantId, CancellationToken ct = default);
     Task<bool> CanEditDiscountAsync(int discountId, string merchantId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Redeems a customer's coupon by code, marking it as Used.
+    /// </summary>
+    Task<(bool Success, string Message)> RedeemCouponAsync(string couponCode, string merchantId, CancellationToken ct = default);
 }

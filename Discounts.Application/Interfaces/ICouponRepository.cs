@@ -6,6 +6,7 @@ public interface ICouponRepository
 {
     Task<Coupon?> GetByIdAsync(int id, CancellationToken ct = default);
     Task<Coupon?> GetByCodeAsync(string code, CancellationToken ct = default);
+    Task<Coupon?> GetByCodeWithDiscountAsync(string code, CancellationToken ct = default);
     Task<IEnumerable<Coupon>> GetByDiscountIdAsync(int discountId, CancellationToken ct = default);
     Task<IEnumerable<Coupon>> GetByCustomerIdAsync(string customerId, CancellationToken ct = default);
     Task<IEnumerable<Coupon>> CreateBulkAsync(IEnumerable<Coupon> coupons, CancellationToken ct = default);
@@ -25,6 +26,9 @@ public interface ICouponRepository
     Task<IEnumerable<Coupon>> GetExpiredPurchasedByCustomerAsync(string customerId, CancellationToken ct = default);
     Task<IEnumerable<Coupon>> GetAllPurchasedOrUsedByCustomerAsync(string customerId, CancellationToken ct = default);
     Task<Coupon?> GetByIdAndCustomerWithDetailsAsync(int couponId, string customerId, CancellationToken ct = default);
+
+    // Background service queries
+    Task<IReadOnlyList<Coupon>> GetExpiredReservationsAsync(DateTime expirationThreshold, CancellationToken ct = default);
 
     Task SaveChangesAsync(CancellationToken ct = default);
 }

@@ -1,48 +1,48 @@
+using System.Security.Claims;
 using Discounts.Application.DTOs;
 using Discounts.Application.Interfaces;
 using Discounts.Application.Models;
-using Discounts.Domain.Entities.Core;
+using Discounts.Domain.Constants;
 using Discounts.Domain.Enums;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Discounts.Web.Controllers;
 
-[Authorize(Roles = "Merchant")]
+[Authorize(Roles = Roles.Merchant)]
 public class MerchantController : Controller
 {
     private readonly IMerchantService _merchantService;
     private readonly ICategoryService _categoryService;
-    private readonly UserManager<ApplicationUser> _userManager;
 
     public MerchantController(
         IMerchantService merchantService,
-        ICategoryService categoryService,
-        UserManager<ApplicationUser> userManager)
+        ICategoryService categoryService)
     {
         _merchantService = merchantService;
         _categoryService = categoryService;
-        _userManager = userManager;
     }
 
+    private string? GetUserId() =>
+        User.FindFirstValue(ClaimTypes.NameIdentifier);
+
     // Dashboard
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
-        var model = await _merchantService.GetDashboardAsync(userId).ConfigureAwait(false);
+        var model = await _merchantService.GetDashboardAsync(userId, ct).ConfigureAwait(false);
         return View(model.Adapt<MerchantDashboardDto>());
     }
 
     // My Discounts List
-    public async Task<IActionResult> MyDiscounts(DiscountStatus? status)
+    public async Task<IActionResult> MyDiscounts(DiscountStatus? status, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
@@ -50,11 +50,11 @@ public class MerchantController : Controller
 
         if (status.HasValue)
         {
-            models = await _merchantService.GetMerchantDiscountsByStatusAsync(userId, status.Value).ConfigureAwait(false);
+            models = await _merchantService.GetMerchantDiscountsByStatusAsync(userId, status.Value, ct).ConfigureAwait(false);
         }
         else
         {
-            models = await _merchantService.GetMerchantDiscountsAsync(userId).ConfigureAwait(false);
+            models = await _merchantService.GetMerchantDiscountsAsync(userId, ct).ConfigureAwait(false);
         }
 
         ViewBag.CurrentStatus = status;
@@ -63,54 +63,54 @@ public class MerchantController : Controller
 
     // Create GET
     [HttpGet]
-    public async Task<IActionResult> CreateDiscount()
+    public async Task<IActionResult> CreateDiscount(CancellationToken ct)
     {
-        await PopulateCategoriesAsync().ConfigureAwait(false);
+        await PopulateCategoriesAsync(ct: ct).ConfigureAwait(false);
         return View();
     }
 
     // Create POST
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateDiscount(CreateDiscountDto model)
+    public async Task<IActionResult> CreateDiscount(CreateDiscountDto model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
-            await PopulateCategoriesAsync().ConfigureAwait(false);
+            await PopulateCategoriesAsync(ct: ct).ConfigureAwait(false);
             return View(model);
         }
 
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
         try
         {
-            await _merchantService.CreateDiscountAsync(model.Adapt<CreateDiscountModel>(), userId).ConfigureAwait(false);
+            var created = await _merchantService.CreateDiscountAsync(model.Adapt<CreateDiscountModel>(), userId, ct).ConfigureAwait(false);
             TempData["Success"] = "ფასდაკლება წარმატებით შეიქმნა. ის გაიგზავნება ადმინისტრატორის დასამტკიცებლად.";
-            return RedirectToAction(nameof(MyDiscounts));
+            return RedirectToAction(nameof(Details), new { id = created.Id });
         }
         catch (Exception ex)
         {
             ModelState.AddModelError("", $"შეცდომა: {ex.Message}");
-            await PopulateCategoriesAsync().ConfigureAwait(false);
+            await PopulateCategoriesAsync(ct: ct).ConfigureAwait(false);
             return View(model);
         }
     }
 
     // Edit GET
     [HttpGet]
-    public async Task<IActionResult> EditDiscount(int id)
+    public async Task<IActionResult> EditDiscount(int id, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
-        var discount = await _merchantService.GetDiscountByIdAsync(id, userId).ConfigureAwait(false);
+        var discount = await _merchantService.GetDiscountByIdAsync(id, userId, ct).ConfigureAwait(false);
         if (discount == null)
             return NotFound();
 
-        var canEdit = await _merchantService.CanEditDiscountAsync(id, userId).ConfigureAwait(false);
+        var canEdit = await _merchantService.CanEditDiscountAsync(id, userId, ct).ConfigureAwait(false);
         if (!canEdit)
         {
             TempData["Error"] = "ფასდაკლების რედაქტირება შეუძლებელია. რედაქტირება შესაძლებელია მხოლოდ 24 საათის განმავლობაში შექმნის შემდეგ, ან თუ სტატუსი არის 'მოლოდინში' ან 'უარყოფილი'.";
@@ -119,28 +119,28 @@ public class MerchantController : Controller
 
         var dto = discount.Adapt<UpdateDiscountDto>();
 
-        await PopulateCategoriesAsync(discount.CategoryId).ConfigureAwait(false);
+        await PopulateCategoriesAsync(discount.CategoryId, ct).ConfigureAwait(false);
         return View(dto);
     }
 
     // Edit POST
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditDiscount(UpdateDiscountDto model)
+    public async Task<IActionResult> EditDiscount(UpdateDiscountDto model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
-            await PopulateCategoriesAsync(model.CategoryId).ConfigureAwait(false);
+            await PopulateCategoriesAsync(model.CategoryId, ct).ConfigureAwait(false);
             return View(model);
         }
 
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
         try
         {
-            await _merchantService.UpdateDiscountAsync(model.Adapt<UpdateDiscountModel>(), userId).ConfigureAwait(false);
+            await _merchantService.UpdateDiscountAsync(model.Adapt<UpdateDiscountModel>(), userId, ct).ConfigureAwait(false);
             TempData["Success"] = "ფასდაკლება წარმატებით განახლდა.";
             return RedirectToAction(nameof(MyDiscounts));
         }
@@ -157,20 +157,20 @@ public class MerchantController : Controller
         catch (Exception ex)
         {
             ModelState.AddModelError("", $"შეცდომა: {ex.Message}");
-            await PopulateCategoriesAsync(model.CategoryId).ConfigureAwait(false);
+            await PopulateCategoriesAsync(model.CategoryId, ct).ConfigureAwait(false);
             return View(model);
         }
     }
 
-    // Details
+    // Details GET
     [HttpGet]
-    public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Details(int id, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
-        var discount = await _merchantService.GetDiscountByIdAsync(id, userId).ConfigureAwait(false);
+        var discount = await _merchantService.GetDiscountByIdAsync(id, userId, ct).ConfigureAwait(false);
         if (discount == null)
             return NotFound();
 
@@ -180,15 +180,15 @@ public class MerchantController : Controller
     // Delete
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
         try
         {
-            var success = await _merchantService.DeleteDiscountAsync(id, userId).ConfigureAwait(false);
+            var success = await _merchantService.DeleteDiscountAsync(id, userId, ct).ConfigureAwait(false);
             if (success)
             {
                 TempData["Success"] = "ფასდაკლება წარმატებით წაიშალა.";
@@ -208,26 +208,26 @@ public class MerchantController : Controller
 
     // Sales History
     [HttpGet]
-    public async Task<IActionResult> SalesHistory(int id)
+    public async Task<IActionResult> SalesHistory(int id, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
-        var discount = await _merchantService.GetDiscountByIdAsync(id, userId).ConfigureAwait(false);
+        var discount = await _merchantService.GetDiscountByIdAsync(id, userId, ct).ConfigureAwait(false);
         if (discount == null)
             return NotFound();
 
-        var salesHistory = await _merchantService.GetSalesHistoryAsync(id, userId).ConfigureAwait(false);
+        var salesHistory = await _merchantService.GetSalesHistoryAsync(id, userId, ct).ConfigureAwait(false);
         ViewBag.DiscountTitle = discount.Title;
         ViewBag.DiscountId = id;
 
         return View(salesHistory.Adapt<IEnumerable<SalesHistoryDto>>());
     }
 
-    private async Task PopulateCategoriesAsync(int? selectedCategoryId = null)
+    private async Task PopulateCategoriesAsync(int? selectedCategoryId = null, CancellationToken ct = default)
     {
-        var categories = await _categoryService.GetActiveCategoriesAsync().ConfigureAwait(false);
+        var categories = await _categoryService.GetActiveCategoriesAsync(ct).ConfigureAwait(false);
         ViewBag.Categories = new SelectList(categories, "Id", "Name", selectedCategoryId);
     }
 }

@@ -1,16 +1,39 @@
+using System.Globalization;
 using Discounts.Infrastructure;
 using Discounts.Web.Extensions;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .CreateBootstrapLogger();
 
-builder.Services.AddWebPresentation();
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddWebAuthorization();
+try
+{
+    Log.Information("Starting Discounts Web");
 
-var app = builder.Build();
+    var builder = WebApplication.CreateBuilder(args);
 
-await app.SeedDataAsync().ConfigureAwait(false);
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services));
 
-app.UseWebPipeline();
+    builder.Services.AddWebPresentation();
+    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddWebAuthorization();
 
-app.Run();
+    var app = builder.Build();
+
+    await app.SeedDataAsync().ConfigureAwait(false);
+
+    app.UseWebPipeline();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

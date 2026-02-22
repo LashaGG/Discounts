@@ -1,9 +1,12 @@
 using Discounts.Application.Interfaces;
 using Discounts.Application.Models;
+using Discounts.Application;
 using Discounts.Domain.Entities.Business;
 using Discounts.Domain.Entities.Configuration;
 using Discounts.Domain.Enums;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Discounts.Infrastructure.Services;
 
@@ -11,16 +14,22 @@ public class CustomerService : ICustomerService
 {
     private readonly IDiscountRepository _discountRepository;
     private readonly ICouponRepository _couponRepository;
+    private readonly IOrderRepository _orderRepository;
     private readonly ISystemSettingsRepository _settingsRepository;
+    private readonly IStringLocalizer<ServiceMessages> _localizer;
 
     public CustomerService(
         IDiscountRepository discountRepository,
         ICouponRepository couponRepository,
-        ISystemSettingsRepository settingsRepository)
+        IOrderRepository orderRepository,
+        ISystemSettingsRepository settingsRepository,
+        IStringLocalizer<ServiceMessages> localizer)
     {
         _discountRepository = discountRepository;
         _couponRepository = couponRepository;
+        _orderRepository = orderRepository;
         _settingsRepository = settingsRepository;
+        _localizer = localizer;
     }
 
     // Browse & Search
@@ -28,6 +37,19 @@ public class CustomerService : ICustomerService
     {
         var discounts = await _discountRepository.GetActiveWithDetailsAsync(ct).ConfigureAwait(false);
         return discounts.Adapt<IEnumerable<DiscountModel>>();
+    }
+
+    public async Task<PagedResult<DiscountModel>> GetActiveDiscountsPagedAsync(int page, int pageSize, CancellationToken ct = default)
+    {
+        var (items, totalCount) = await _discountRepository.GetActivePagedAsync(page, pageSize, ct).ConfigureAwait(false);
+
+        return new PagedResult<DiscountModel>
+        {
+            Items = items.Adapt<IReadOnlyList<DiscountModel>>(),
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<IEnumerable<DiscountModel>> GetDiscountsByCategoryAsync(int categoryId, CancellationToken ct = default)
@@ -60,49 +82,81 @@ public class CustomerService : ICustomerService
     // Booking & Purchase
     public async Task<ReservationResultModel> ReserveCouponAsync(int discountId, string customerId, CancellationToken ct = default)
     {
-        var discount = await _discountRepository.GetByIdAsync(discountId, ct).ConfigureAwait(false);
+        const int maxRetries = 3;
 
-        if (discount == null)
-            return new ReservationResultModel { Success = false, Message = "ფასდაკლება ვერ მოიძებნა" };
-
-        if (discount.Status != DiscountStatus.Active)
-            return new ReservationResultModel { Success = false, Message = "ფასდაკლება აღარ არის აქტიური" };
-
-        if (discount.AvailableCoupons <= 0)
-            return new ReservationResultModel { Success = false, Message = "კუპონები ამოიწურა" };
-
-        var existingReservation = await _couponRepository
-            .GetReservedByDiscountAndCustomerAsync(discountId, customerId, ct).ConfigureAwait(false);
-
-        if (existingReservation != null)
-            return new ReservationResultModel { Success = false, Message = "თქვენ უკვე გაქვთ ამ ფასდაკლების ჯავშანი" };
-
-        var availableCoupon = await _couponRepository
-            .GetFirstAvailableByDiscountAsync(discountId, ct).ConfigureAwait(false);
-
-        if (availableCoupon == null)
-            return new ReservationResultModel { Success = false, Message = "ხელმისაწვდომი კუპონი ვერ მოიძებნა" };
-
-        var reservationMinutes = await _settingsRepository.GetIntValueAsync(
-            SettingsKeys.ReservationDuration, 30, ct).ConfigureAwait(false);
-
-        availableCoupon.Status = CouponStatus.Reserved;
-        availableCoupon.CustomerId = customerId;
-        availableCoupon.ReservedAt = DateTime.UtcNow;
-
-        discount.AvailableCoupons--;
-
-        // Both entities are tracked by the same scoped DbContext; SaveChanges persists all changes
-        await _couponRepository.SaveChangesAsync(ct).ConfigureAwait(false);
-
-        return new ReservationResultModel
+        for (var attempt = 0; attempt < maxRetries; attempt++)
         {
-            Success = true,
-            Message = "კუპონი წარმატებით დაჯავშნილია",
-            CouponId = availableCoupon.Id,
-            ExpiresAt = availableCoupon.ReservedAt.Value.AddMinutes(reservationMinutes),
-            ReservationMinutes = reservationMinutes
-        };
+            var discount = await _discountRepository.GetByIdAsync(discountId, ct).ConfigureAwait(false);
+
+            if (discount == null)
+                return new ReservationResultModel { Success = false, Message = _localizer["Service_DiscountNotFound"] };
+
+            if (discount.Status != DiscountStatus.Active)
+                return new ReservationResultModel { Success = false, Message = _localizer["Service_DiscountNoLongerActive"] };
+
+            if (discount.AvailableCoupons <= 0)
+                return new ReservationResultModel { Success = false, Message = _localizer["Service_CouponsSoldOut"] };
+
+            // Check reservation duration to detect logically expired reservations
+            var reservationMinutes = await _settingsRepository.GetIntValueAsync(
+                SettingsKeys.ReservationDuration, 30, ct).ConfigureAwait(false);
+
+            var existingReservation = await _couponRepository
+                .GetReservedByDiscountAndCustomerAsync(discountId, customerId, ct).ConfigureAwait(false);
+
+            if (existingReservation != null)
+            {
+                // If the reservation has expired but the background cleanup hasn't run yet, release it inline
+                var isExpired = existingReservation.ReservedAt.HasValue
+                                && DateTime.UtcNow - existingReservation.ReservedAt.Value > TimeSpan.FromMinutes(reservationMinutes);
+
+                if (isExpired)
+                {
+                    existingReservation.Status = CouponStatus.Available;
+                    existingReservation.CustomerId = null;
+                    existingReservation.ReservedAt = null;
+                    discount.AvailableCoupons++;
+                    await _couponRepository.SaveChangesAsync(ct).ConfigureAwait(false);
+                }
+                else
+                {
+                    return new ReservationResultModel { Success = false, Message = _localizer["Service_AlreadyReserved"] };
+                }
+            }
+
+            var availableCoupon = await _couponRepository
+                .GetFirstAvailableByDiscountAsync(discountId, ct).ConfigureAwait(false);
+
+            if (availableCoupon == null)
+                return new ReservationResultModel { Success = false, Message = _localizer["Service_NoCouponAvailable"] };
+
+            availableCoupon.Status = CouponStatus.Reserved;
+            availableCoupon.CustomerId = customerId;
+            availableCoupon.ReservedAt = DateTime.UtcNow;
+
+            discount.AvailableCoupons--;
+
+            try
+            {
+                await _couponRepository.SaveChangesAsync(ct).ConfigureAwait(false);
+            }
+            catch (DbUpdateConcurrencyException) when (attempt < maxRetries - 1)
+            {
+                // Another request modified the Discount row concurrently; retry with fresh data
+                continue;
+            }
+
+            return new ReservationResultModel
+            {
+                Success = true,
+                Message = _localizer["Service_CouponReservedSuccessfully"],
+                CouponId = availableCoupon.Id,
+                ExpiresAt = availableCoupon.ReservedAt.Value.AddMinutes(reservationMinutes),
+                ReservationMinutes = reservationMinutes
+            };
+        }
+
+        return new ReservationResultModel { Success = false, Message = _localizer["Service_CouponsSoldOut"] };
     }
 
     public async Task<PurchaseResultModel> PurchaseCouponAsync(int discountId, string customerId, CancellationToken ct = default)
@@ -111,6 +165,7 @@ public class CustomerService : ICustomerService
             .GetReservedByDiscountAndCustomerWithDiscountAsync(discountId, customerId, ct).ConfigureAwait(false);
 
         var coupon = reservedCoupon;
+        var wasAlreadyReserved = coupon != null;
 
         if (coupon == null)
         {
@@ -126,20 +181,44 @@ public class CustomerService : ICustomerService
         }
 
         if (coupon == null)
-            return new PurchaseResultModel { Success = false, Message = "კუპონი ვერ მოიძებნა" };
+            return new PurchaseResultModel { Success = false, Message = _localizer["Service_CouponNotFound"] };
+
+        // Ensure the Discount navigation is loaded for pricing
+        var discount = coupon.Discount
+            ?? await _discountRepository.GetByIdAsync(coupon.DiscountId, ct).ConfigureAwait(false);
+
+        if (discount == null)
+            return new PurchaseResultModel { Success = false, Message = _localizer["Service_DiscountNotFound"] };
+
+        var orderNumber = await _orderRepository.GenerateOrderNumberAsync(ct).ConfigureAwait(false);
+
+        var order = new Order
+        {
+            OrderNumber = orderNumber,
+            CustomerId = customerId,
+            DiscountId = coupon.DiscountId,
+            TotalAmount = discount.DiscountedPrice,
+            Quantity = 1,
+            Status = OrderStatus.Completed,
+            CreatedAt = DateTime.UtcNow,
+            CompletedAt = DateTime.UtcNow
+        };
+
+        var createdOrder = await _orderRepository.CreateAsync(order, ct).ConfigureAwait(false);
 
         coupon.Status = CouponStatus.Purchased;
         coupon.PurchasedAt = DateTime.UtcNow;
+        coupon.OrderId = createdOrder.Id;
 
         await _couponRepository.UpdateAsync(coupon, ct).ConfigureAwait(false);
 
         return new PurchaseResultModel
         {
             Success = true,
-            Message = "კუპონი წარმატებით შეძენილია",
+            Message = _localizer["Service_CouponPurchasedSuccessfully"],
             CouponId = coupon.Id,
             CouponCode = coupon.Code,
-            Amount = coupon.Discount.DiscountedPrice
+            Amount = discount.DiscountedPrice
         };
     }
 

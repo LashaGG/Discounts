@@ -1,3 +1,4 @@
+using Discounts.Application.Commands;
 using Discounts.Application.DTOs;
 using Discounts.Application.Models;
 using Discounts.Domain.Entities.Business;
@@ -44,6 +45,17 @@ public static class MappingConfig
             .Ignore(dest => dest.Category!)
             .Ignore(dest => dest.Merchant!);
 
+        TypeAdapterConfig<CreateDiscountCommand, Discount>.NewConfig()
+            .Map(dest => dest.AvailableCoupons, src => src.TotalCoupons)
+            .Map(dest => dest.Status, _ => Domain.Enums.DiscountStatus.Pending)
+            .Map(dest => dest.CreatedAt, _ => DateTime.UtcNow)
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.Category!)
+            .Ignore(dest => dest.Merchant!);
+
+        TypeAdapterConfig<CreateDiscountDto, CreateDiscountCommand>.NewConfig()
+            .Map(dest => dest.MerchantId, _ => string.Empty);
+
         TypeAdapterConfig<CreateCategoryModel, Category>.NewConfig()
             .Map(dest => dest.IsActive, _ => true)
             .Map(dest => dest.CreatedAt, _ => DateTime.UtcNow)
@@ -51,6 +63,8 @@ public static class MappingConfig
 
         TypeAdapterConfig<DiscountModel, DiscountDto>.NewConfig();
         TypeAdapterConfig<DiscountDto, DiscountModel>.NewConfig();
+
+        TypeAdapterConfig<PagedResult<DiscountModel>, PagedResultDto<DiscountDto>>.NewConfig();
 
         TypeAdapterConfig<CreateDiscountDto, CreateDiscountModel>.NewConfig();
         TypeAdapterConfig<UpdateDiscountDto, UpdateDiscountModel>.NewConfig();
@@ -76,5 +90,10 @@ public static class MappingConfig
         TypeAdapterConfig<RegisterRequestDto, RegisterRequestModel>.NewConfig();
         TypeAdapterConfig<RefreshTokenRequestDto, RefreshTokenRequestModel>.NewConfig();
         TypeAdapterConfig<AuthResponseModel, AuthResponseDto>.NewConfig();
+
+        // Web Account mappings (ViewModel → Application Model)
+        // RegisterViewModel and LoginViewModel live in the Web layer so Mapster
+        // can resolve these at runtime via convention.  Explicit configs are only
+        // needed when names differ.
     }
 }

@@ -1,11 +1,14 @@
+using Discounts.Application;
 using Discounts.Application.Interfaces;
 using Discounts.Application.Models;
 using Discounts.Domain.Entities.Business;
 using Discounts.Domain.Entities.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Discounts.Domain.Entities.Core;
 using Discounts.Domain.Enums;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Localization;
 
 namespace Discounts.Infrastructure.Services;
 
@@ -16,19 +19,22 @@ public class AdminService : IAdminService
     private readonly ICategoryRepository _categoryRepository;
     private readonly ISystemSettingsRepository _settingsRepository;
     private readonly IOrderRepository _orderRepository;
+    private readonly IStringLocalizer<ServiceMessages> _localizer;
 
     public AdminService(
         UserManager<ApplicationUser> userManager,
         IDiscountRepository discountRepository,
         ICategoryRepository categoryRepository,
         ISystemSettingsRepository settingsRepository,
-        IOrderRepository orderRepository)
+        IOrderRepository orderRepository,
+        IStringLocalizer<ServiceMessages> localizer)
     {
         _userManager = userManager;
         _discountRepository = discountRepository;
         _categoryRepository = categoryRepository;
         _settingsRepository = settingsRepository;
         _orderRepository = orderRepository;
+        _localizer = localizer;
     }
 
     // Dashboard
@@ -43,7 +49,7 @@ public class AdminService : IAdminService
 
         var recentDiscounts = await _discountRepository.GetRecentWithDetailsAsync(5, ct).ConfigureAwait(false);
 
-        var allUsers = _userManager.Users.OrderByDescending(u => u.CreatedAt).Take(5).ToList();
+        var allUsers = await _userManager.Users.OrderByDescending(u => u.CreatedAt).Take(5).ToListAsync(ct).ConfigureAwait(false);
         var recentUserModels = new List<UserModel>();
         foreach (var user in allUsers)
         {
@@ -52,7 +58,7 @@ public class AdminService : IAdminService
             recentUserModels.Add(model);
         }
 
-        var totalUserCount = _userManager.Users.Count();
+        var totalUserCount = await _userManager.Users.CountAsync(ct).ConfigureAwait(false);
 
         return new AdminDashboardModel
         {
@@ -70,10 +76,10 @@ public class AdminService : IAdminService
     }
 
     // User Management
-    public Task<IEnumerable<UserModel>> GetAllUsersAsync(CancellationToken ct = default)
+    public async Task<IEnumerable<UserModel>> GetAllUsersAsync(CancellationToken ct = default)
     {
-        var users = _userManager.Users.OrderByDescending(u => u.CreatedAt).ToList();
-        return MapUsersToModelsAsync(users);
+        var users = await _userManager.Users.OrderByDescending(u => u.CreatedAt).ToListAsync(ct).ConfigureAwait(false);
+        return await MapUsersToModelsAsync(users).ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<UserModel>> GetUsersByRoleAsync(string role, CancellationToken ct = default)
@@ -281,7 +287,7 @@ public class AdminService : IAdminService
         if (category == null) return false;
 
         if (category.Discounts?.Any() == true)
-            throw new InvalidOperationException("კატეგორია ვერ წაიშლება, რადგან მას აქვს ფასდაკლებები მიბმული");
+            throw new InvalidOperationException(_localizer["Service_CannotDeleteCategoryWithDiscounts"]);
 
         await _categoryRepository.DeleteAsync(categoryId, ct).ConfigureAwait(false);
         return true;

@@ -36,6 +36,7 @@ public class OrderRepository : IOrderRepository
     public async Task<IEnumerable<Order>> GetByCustomerIdAsync(string customerId, CancellationToken ct = default)
     {
         return await _context.Orders
+            .AsNoTracking()
             .Include(o => o.Discount)
             .ThenInclude(d => d.Category)
             .Where(o => o.CustomerId == customerId)

@@ -1,4 +1,3 @@
-using Discounts.Application.Mapping;
 using Discounts.Domain.Constants;
 
 namespace Discounts.Web.Extensions;
@@ -10,8 +9,6 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddWebPresentation(this IServiceCollection services)
     {
-        MappingConfig.Configure();
-
         services.AddLocalization(options => options.ResourcesPath = "Resources");
         services.AddControllersWithViews()
             .AddViewLocalization()

@@ -33,6 +33,21 @@ public class CustomerController : ControllerBase
         return models.Adapt<List<DiscountDto>>();
     }
 
+    [HttpGet("discounts/paged")]
+    [AllowAnonymous]
+    public async Task<ActionResult<PagedResultDto<DiscountDto>>> GetActiveDiscountsPaged(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken ct = default)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100;
+
+        var pagedModel = await _customerService.GetActiveDiscountsPagedAsync(page, pageSize, ct).ConfigureAwait(false);
+        return pagedModel.Adapt<PagedResultDto<DiscountDto>>();
+    }
+
     [HttpGet("discounts/category/{categoryId:int}")]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<DiscountDto>>> GetByCategory(int categoryId, CancellationToken ct)

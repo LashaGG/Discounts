@@ -1,8 +1,11 @@
+using Discounts.Application;
 using Discounts.Application.Interfaces;
 using Discounts.Application.Models;
 using Discounts.Domain.Entities.Business;
+using Discounts.Domain.Entities.Configuration;
 using Discounts.Domain.Enums;
 using Mapster;
+using Microsoft.Extensions.Localization;
 
 namespace Discounts.Infrastructure.Services;
 
@@ -11,16 +14,22 @@ public class MerchantService : IMerchantService
     private readonly IDiscountRepository _discountRepository;
     private readonly ICouponRepository _couponRepository;
     private readonly IOrderRepository _orderRepository;
-    private readonly int _editAllowedHours = 24;
+    private readonly ISystemSettingsRepository _settingsRepository;
+    private readonly IStringLocalizer<ServiceMessages> _localizer;
+    private const int DefaultEditAllowedHours = 24;
 
     public MerchantService(
         IDiscountRepository discountRepository,
         ICouponRepository couponRepository,
-        IOrderRepository orderRepository)
+        IOrderRepository orderRepository,
+        ISystemSettingsRepository settingsRepository,
+        IStringLocalizer<ServiceMessages> localizer)
     {
         _discountRepository = discountRepository;
         _couponRepository = couponRepository;
         _orderRepository = orderRepository;
+        _settingsRepository = settingsRepository;
+        _localizer = localizer;
     }
 
     public async Task<MerchantDashboardModel> GetDashboardAsync(string merchantId, CancellationToken ct = default)
@@ -68,10 +77,8 @@ public class MerchantService : IMerchantService
         DiscountStatus status,
         CancellationToken ct = default)
     {
-        var discounts = await _discountRepository.GetByMerchantIdAsync(merchantId, ct).ConfigureAwait(false);
-        return discounts
-            .Where(d => d.Status == status)
-            .Adapt<IEnumerable<DiscountModel>>();
+        var discounts = await _discountRepository.GetByMerchantIdAndStatusAsync(merchantId, status, ct).ConfigureAwait(false);
+        return discounts.Adapt<IEnumerable<DiscountModel>>();
     }
 
     public async Task<DiscountModel?> GetDiscountByIdAsync(int discountId, string merchantId, CancellationToken ct = default)
@@ -89,22 +96,26 @@ public class MerchantService : IMerchantService
         ArgumentNullException.ThrowIfNull(model);
 
         if (model.DiscountedPrice >= model.OriginalPrice)
-            throw new InvalidOperationException("ფასდაკლებული ფასი უნდა იყოს ნაკლები ორიგინალურ ფასზე");
+            throw new InvalidOperationException(_localizer["Service_DiscountedPriceMustBeLess"]);
 
-        // Convert local dates to UTC for consistent storage
-        if (model.ValidFrom.Kind != DateTimeKind.Utc)
-            model.ValidFrom = model.ValidFrom.ToUniversalTime();
-        if (model.ValidTo.Kind != DateTimeKind.Utc)
-            model.ValidTo = model.ValidTo.ToUniversalTime();
+        // Convert to UTC without mutating the caller's model
+        var validFrom = model.ValidFrom.Kind != DateTimeKind.Utc
+            ? model.ValidFrom.ToUniversalTime()
+            : model.ValidFrom;
+        var validTo = model.ValidTo.Kind != DateTimeKind.Utc
+            ? model.ValidTo.ToUniversalTime()
+            : model.ValidTo;
 
-        if (model.ValidFrom >= model.ValidTo)
-            throw new InvalidOperationException("დასრულების თარიღი უნდა იყოს დაწყების თარიღზე გვიან");
+        if (validFrom >= validTo)
+            throw new InvalidOperationException(_localizer["Service_EndDateMustBeAfterStart"]);
 
-        if (model.ValidFrom < DateTime.UtcNow.AddHours(-1))
-            throw new InvalidOperationException("დაწყების თარიღი არ შეიძლება იყოს წარსულში");
+        if (validFrom < DateTime.UtcNow.AddHours(-1))
+            throw new InvalidOperationException(_localizer["Service_StartDateCannotBeInPast"]);
 
         var discount = model.Adapt<Discount>();
         discount.MerchantId = merchantId;
+        discount.ValidFrom = validFrom;
+        discount.ValidTo = validTo;
 
         var created = await _discountRepository.CreateAsync(discount, ct).ConfigureAwait(false);
 
@@ -130,34 +141,55 @@ public class MerchantService : IMerchantService
         ArgumentNullException.ThrowIfNull(model);
 
         if (model.DiscountedPrice >= model.OriginalPrice)
-            throw new InvalidOperationException("ფასდაკლებული ფასი უნდა იყოს ნაკლები ორიგინალურ ფასზე");
+            throw new InvalidOperationException(_localizer["Service_DiscountedPriceMustBeLess"]);
 
-        // Convert local dates to UTC for consistent storage
-        if (model.ValidFrom.Kind != DateTimeKind.Utc)
-            model.ValidFrom = model.ValidFrom.ToUniversalTime();
-        if (model.ValidTo.Kind != DateTimeKind.Utc)
-            model.ValidTo = model.ValidTo.ToUniversalTime();
+        // Convert to UTC without mutating the caller's model
+        var validFrom = model.ValidFrom.Kind != DateTimeKind.Utc
+            ? model.ValidFrom.ToUniversalTime()
+            : model.ValidFrom;
+        var validTo = model.ValidTo.Kind != DateTimeKind.Utc
+            ? model.ValidTo.ToUniversalTime()
+            : model.ValidTo;
 
-        if (model.ValidFrom >= model.ValidTo)
-            throw new InvalidOperationException("დასრულების თარიღი უნდა იყოს დაწყების თარიღზე გვიან");
+        if (validFrom >= validTo)
+            throw new InvalidOperationException(_localizer["Service_EndDateMustBeAfterStart"]);
 
         var discount = await _discountRepository.GetByIdAsync(model.Id, ct).ConfigureAwait(false)
-            ?? throw new KeyNotFoundException("ფასდაკლება ვერ მოიძებნა");
+            ?? throw new KeyNotFoundException(_localizer["Service_DiscountNotFound"]);
 
         if (discount.MerchantId != merchantId)
-            throw new UnauthorizedAccessException("თქვენ არ გაქვთ ამ ფასდაკლების რედაქტირების უფლება");
+            throw new UnauthorizedAccessException(_localizer["Service_NoPermissionToEdit"]);
 
-        if (!discount.CanBeEdited(_editAllowedHours))
-            throw new InvalidOperationException($"ფასდაკლების რედაქტირება შესაძლებელია მხოლოდ {_editAllowedHours} საათის განმავლობაში");
+        var editAllowedHours = await _settingsRepository.GetIntValueAsync(
+            SettingsKeys.MerchantEditWindow, DefaultEditAllowedHours, ct).ConfigureAwait(false);
+
+        if (!discount.CanBeEdited(editAllowedHours))
+            throw new InvalidOperationException(_localizer["Service_EditWindowExpired", editAllowedHours]);
 
         discount.Title = model.Title;
         discount.Description = model.Description;
         discount.ImageUrl = model.ImageUrl;
         discount.OriginalPrice = model.OriginalPrice;
         discount.DiscountedPrice = model.DiscountedPrice;
-        discount.ValidFrom = model.ValidFrom;
-        discount.ValidTo = model.ValidTo;
+        discount.ValidFrom = validFrom;
+        discount.ValidTo = validTo;
         discount.CategoryId = model.CategoryId;
+
+        // If the discount was Approved (Active), revert to Pending for re-approval
+        if (discount.Status == DiscountStatus.Approved || discount.Status == DiscountStatus.Active)
+        {
+            discount.Status = DiscountStatus.Pending;
+            discount.ApprovedByAdminId = null;
+            discount.ApprovedAt = null;
+            discount.RejectionReason = null;
+        }
+
+        // If it was Rejected, keep it as Pending so the merchant can resubmit
+        if (discount.Status == DiscountStatus.Rejected)
+        {
+            discount.Status = DiscountStatus.Pending;
+            discount.RejectionReason = null;
+        }
 
         await _discountRepository.UpdateAsync(discount, ct).ConfigureAwait(false);
 
@@ -172,7 +204,7 @@ public class MerchantService : IMerchantService
             return false;
 
         if (discount.SoldCoupons > 0)
-            throw new InvalidOperationException("Cannot delete discount with sold coupons");
+            throw new InvalidOperationException(_localizer["Service_CannotDeleteWithSoldCoupons"]);
 
         await _discountRepository.DeleteAsync(discountId, ct).ConfigureAwait(false);
         return true;
@@ -206,6 +238,38 @@ public class MerchantService : IMerchantService
         if (discount == null || discount.MerchantId != merchantId)
             return false;
 
-        return discount.CanBeEdited(_editAllowedHours);
+        var editAllowedHours = await _settingsRepository.GetIntValueAsync(
+            SettingsKeys.MerchantEditWindow, DefaultEditAllowedHours, ct).ConfigureAwait(false);
+
+        return discount.CanBeEdited(editAllowedHours);
+    }
+
+    public async Task<(bool Success, string Message)> RedeemCouponAsync(string couponCode, string merchantId, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(couponCode))
+            return (false, _localizer["Service_CouponNotFound"]);
+
+        var coupon = await _couponRepository.GetByCodeWithDiscountAsync(couponCode, ct).ConfigureAwait(false);
+
+        if (coupon == null)
+            return (false, _localizer["Service_CouponNotFound"]);
+
+        // Verify the coupon belongs to a discount owned by this merchant
+        if (coupon.Discount.MerchantId != merchantId)
+            return (false, _localizer["Service_NoPermissionToEdit"]);
+
+        if (coupon.Status == CouponStatus.Used)
+            return (false, _localizer["Service_CouponAlreadyUsed"]);
+
+        if (coupon.Status != CouponStatus.Purchased)
+            return (false, _localizer["Service_CouponNotPurchased"]);
+
+        coupon.Status = CouponStatus.Used;
+        coupon.IsUsed = true;
+        coupon.UsedAt = DateTime.UtcNow;
+
+        await _couponRepository.UpdateAsync(coupon, ct).ConfigureAwait(false);
+
+        return (true, _localizer["Service_CouponRedeemedSuccessfully"]);
     }
 }

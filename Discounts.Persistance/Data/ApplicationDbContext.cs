@@ -67,6 +67,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .HasForeignKey(e => e.ApprovedByAdminId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            entity.Property(e => e.RowVersion)
+                .IsRowVersion();
+
             entity.HasIndex(e => e.Status);
             entity.HasIndex(e => e.ValidFrom);
             entity.HasIndex(e => e.ValidTo);

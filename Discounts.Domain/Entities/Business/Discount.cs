@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Discounts.Domain.Entities.Core;
 using Discounts.Domain.Enums;
 
@@ -6,6 +7,9 @@ namespace Discounts.Domain.Entities.Business;
 public class Discount
 {
     public int Id { get; set; }
+
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = null!;
     
     // Basic Info
     public string Title { get; set; } = string.Empty;
@@ -59,9 +63,11 @@ public class Discount
     
     public bool CanBeEdited(int allowedEditHours = 24)
     {
-        if (Status != DiscountStatus.Pending && Status != DiscountStatus.Rejected)
+        if (Status != DiscountStatus.Pending &&
+            Status != DiscountStatus.Rejected &&
+            Status != DiscountStatus.Approved)
             return false;
-            
+
         var createdTimeLimit = CreatedAt.AddHours(allowedEditHours);
         return DateTime.UtcNow <= createdTimeLimit;
     }

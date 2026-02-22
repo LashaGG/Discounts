@@ -1,52 +1,52 @@
+using System.Security.Claims;
 using Discounts.Application.DTOs;
 using Discounts.Application.Interfaces;
 using Discounts.Application.Models;
-using Discounts.Domain.Entities.Core;
+using Discounts.Domain.Constants;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
 namespace Discounts.Web.Controllers;
 
-[Authorize(Roles = "Administrator")]
+[Authorize(Roles = Roles.Administrator)]
 public class AdminController : Controller
 {
     private readonly IAdminService _adminService;
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IStringLocalizer<SharedResource> _localizer;
 
     public AdminController(
         IAdminService adminService,
-        UserManager<ApplicationUser> userManager,
         IStringLocalizer<SharedResource> localizer)
     {
         _adminService = adminService;
-        _userManager = userManager;
         _localizer = localizer;
     }
 
+    private string? GetUserId() =>
+        User.FindFirstValue(ClaimTypes.NameIdentifier);
+
     // Dashboard
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(CancellationToken ct)
     {
-        var model = await _adminService.GetDashboardAsync();
+        var model = await _adminService.GetDashboardAsync(ct).ConfigureAwait(false);
         return View(model.Adapt<AdminDashboardDto>());
     }
 
     // User Management
     [HttpGet]
-    public async Task<IActionResult> Users(string? role)
+    public async Task<IActionResult> Users(string? role, CancellationToken ct)
     {
         IEnumerable<UserModel> models;
 
         if (!string.IsNullOrEmpty(role))
         {
-            models = await _adminService.GetUsersByRoleAsync(role).ConfigureAwait(false);
+            models = await _adminService.GetUsersByRoleAsync(role, ct).ConfigureAwait(false);
         }
         else
         {
-            models = await _adminService.GetAllUsersAsync().ConfigureAwait(false);
+            models = await _adminService.GetAllUsersAsync(ct).ConfigureAwait(false);
         }
 
         ViewBag.SelectedRole = role;
@@ -54,9 +54,9 @@ public class AdminController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> UserDetails(string id)
+    public async Task<IActionResult> UserDetails(string id, CancellationToken ct)
     {
-        var model = await _adminService.GetUserByIdAsync(id).ConfigureAwait(false);
+        var model = await _adminService.GetUserByIdAsync(id, ct).ConfigureAwait(false);
         if (model == null)
             return NotFound();
 
@@ -65,9 +65,9 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeactivateUser(string id)
+    public async Task<IActionResult> DeactivateUser(string id, CancellationToken ct)
     {
-        var success = await _adminService.DeactivateUserAsync(id).ConfigureAwait(false);
+        var success = await _adminService.DeactivateUserAsync(id, ct).ConfigureAwait(false);
         if (success)
         {
             TempData["Success"] = _localizer["Admin_UserDeactivated"].Value;
@@ -82,9 +82,9 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ActivateUser(string id)
+    public async Task<IActionResult> ActivateUser(string id, CancellationToken ct)
     {
-        var success = await _adminService.ActivateUserAsync(id).ConfigureAwait(false);
+        var success = await _adminService.ActivateUserAsync(id, ct).ConfigureAwait(false);
         if (success)
         {
             TempData["Success"] = _localizer["Admin_UserActivated"].Value;
@@ -99,16 +99,16 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteUser(string id)
+    public async Task<IActionResult> DeleteUser(string id, CancellationToken ct)
     {
-        var currentUserId = _userManager.GetUserId(User);
+        var currentUserId = GetUserId();
         if (id == currentUserId)
         {
             TempData["Error"] = _localizer["Admin_CannotDeleteSelf"].Value;
             return RedirectToAction(nameof(Users));
         }
 
-        var success = await _adminService.DeleteUserAsync(id).ConfigureAwait(false);
+        var success = await _adminService.DeleteUserAsync(id, ct).ConfigureAwait(false);
         if (success)
         {
             TempData["Success"] = _localizer["Admin_UserDeleted"].Value;
@@ -123,9 +123,9 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateUserRole(string userId, string newRole)
+    public async Task<IActionResult> UpdateUserRole(string userId, string newRole, CancellationToken ct)
     {
-        var success = await _adminService.UpdateUserRoleAsync(userId, newRole).ConfigureAwait(false);
+        var success = await _adminService.UpdateUserRoleAsync(userId, newRole, ct).ConfigureAwait(false);
         if (success)
         {
             TempData["Success"] = _localizer["Admin_RoleChanged"].Value;
@@ -140,21 +140,21 @@ public class AdminController : Controller
 
     // Discount Moderation
     [HttpGet]
-    public async Task<IActionResult> Moderation()
+    public async Task<IActionResult> Moderation(CancellationToken ct)
     {
-        var models = await _adminService.GetPendingDiscountsAsync().ConfigureAwait(false);
+        var models = await _adminService.GetPendingDiscountsAsync(ct).ConfigureAwait(false);
         return View(models.Adapt<IEnumerable<DiscountDto>>());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ApproveDiscount(int id)
+    public async Task<IActionResult> ApproveDiscount(int id, CancellationToken ct)
     {
-        var adminId = _userManager.GetUserId(User);
+        var adminId = GetUserId();
         if (string.IsNullOrEmpty(adminId))
             return RedirectToAction("Login", "Account");
 
-        var success = await _adminService.ApproveDiscountAsync(id, adminId).ConfigureAwait(false);
+        var success = await _adminService.ApproveDiscountAsync(id, adminId, ct).ConfigureAwait(false);
         if (success)
         {
             TempData["Success"] = _localizer["Admin_DiscountApproved"].Value;
@@ -169,7 +169,7 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RejectDiscount(int id, string reason)
+    public async Task<IActionResult> RejectDiscount(int id, string reason, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(reason))
         {
@@ -177,11 +177,11 @@ public class AdminController : Controller
             return RedirectToAction(nameof(Moderation));
         }
 
-        var adminId = _userManager.GetUserId(User);
+        var adminId = GetUserId();
         if (string.IsNullOrEmpty(adminId))
             return RedirectToAction("Login", "Account");
 
-        var success = await _adminService.RejectDiscountAsync(id, adminId, reason).ConfigureAwait(false);
+        var success = await _adminService.RejectDiscountAsync(id, adminId, reason, ct).ConfigureAwait(false);
         if (success)
         {
             TempData["Success"] = _localizer["Admin_DiscountRejected"].Value;
@@ -196,13 +196,13 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SuspendDiscount(int id)
+    public async Task<IActionResult> SuspendDiscount(int id, CancellationToken ct)
     {
-        var adminId = _userManager.GetUserId(User);
+        var adminId = GetUserId();
         if (string.IsNullOrEmpty(adminId))
             return RedirectToAction("Login", "Account");
 
-        var success = await _adminService.SuspendDiscountAsync(id, adminId).ConfigureAwait(false);
+        var success = await _adminService.SuspendDiscountAsync(id, adminId, ct).ConfigureAwait(false);
         if (success)
         {
             TempData["Success"] = _localizer["Admin_DiscountSuspended"].Value;
@@ -217,13 +217,13 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ActivateDiscount(int id)
+    public async Task<IActionResult> ActivateDiscount(int id, CancellationToken ct)
     {
-        var adminId = _userManager.GetUserId(User);
+        var adminId = GetUserId();
         if (string.IsNullOrEmpty(adminId))
             return RedirectToAction("Login", "Account");
 
-        var success = await _adminService.ActivateDiscountAsync(id, adminId).ConfigureAwait(false);
+        var success = await _adminService.ActivateDiscountAsync(id, adminId, ct).ConfigureAwait(false);
         if (success)
         {
             TempData["Success"] = _localizer["Admin_DiscountActivated"].Value;
@@ -238,21 +238,21 @@ public class AdminController : Controller
 
     // Settings Management
     [HttpGet]
-    public async Task<IActionResult> Settings()
+    public async Task<IActionResult> Settings(CancellationToken ct)
     {
-        var settings = await _adminService.GetAllSettingsAsync().ConfigureAwait(false);
+        var settings = await _adminService.GetAllSettingsAsync(ct).ConfigureAwait(false);
         return View(settings);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Settings(Dictionary<string, string> settings)
+    public async Task<IActionResult> Settings(Dictionary<string, string> settings, CancellationToken ct)
     {
-        var adminId = _userManager.GetUserId(User);
+        var adminId = GetUserId();
         if (string.IsNullOrEmpty(adminId))
             return RedirectToAction("Login", "Account");
 
-        var success = await _adminService.UpdateMultipleSettingsAsync(settings, adminId).ConfigureAwait(false);
+        var success = await _adminService.UpdateMultipleSettingsAsync(settings, adminId, ct).ConfigureAwait(false);
         if (success)
         {
             TempData["Success"] = _localizer["Admin_SettingsSaved"].Value;
@@ -267,9 +267,9 @@ public class AdminController : Controller
 
     // Category Management
     [HttpGet]
-    public async Task<IActionResult> Categories()
+    public async Task<IActionResult> Categories(CancellationToken ct)
     {
-        var models = await _adminService.GetAllCategoriesAsync().ConfigureAwait(false);
+        var models = await _adminService.GetAllCategoriesAsync(ct).ConfigureAwait(false);
         return View(models.Adapt<IEnumerable<CategoryDto>>());
     }
 
@@ -281,14 +281,14 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateCategory(CreateCategoryDto model)
+    public async Task<IActionResult> CreateCategory(CreateCategoryDto model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
             return View(model);
 
         try
         {
-            await _adminService.CreateCategoryAsync(model.Adapt<CreateCategoryModel>()).ConfigureAwait(false);
+            await _adminService.CreateCategoryAsync(model.Adapt<CreateCategoryModel>(), ct).ConfigureAwait(false);
             TempData["Success"] = _localizer["Admin_CategoryCreated"].Value;
             return RedirectToAction(nameof(Categories));
         }
@@ -300,9 +300,9 @@ public class AdminController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> EditCategory(int id)
+    public async Task<IActionResult> EditCategory(int id, CancellationToken ct)
     {
-        var categories = await _adminService.GetAllCategoriesAsync().ConfigureAwait(false);
+        var categories = await _adminService.GetAllCategoriesAsync(ct).ConfigureAwait(false);
         var category = categories.FirstOrDefault(c => c.Id == id);
 
         if (category == null)
@@ -314,14 +314,14 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditCategory(UpdateCategoryDto model)
+    public async Task<IActionResult> EditCategory(UpdateCategoryDto model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
             return View(model);
 
         try
         {
-            var success = await _adminService.UpdateCategoryAsync(model.Adapt<UpdateCategoryModel>()).ConfigureAwait(false);
+            var success = await _adminService.UpdateCategoryAsync(model.Adapt<UpdateCategoryModel>(), ct).ConfigureAwait(false);
             if (success)
             {
                 TempData["Success"] = _localizer["Admin_CategoryUpdated"].Value;
@@ -342,11 +342,11 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteCategory(int id)
+    public async Task<IActionResult> DeleteCategory(int id, CancellationToken ct)
     {
         try
         {
-            await _adminService.DeleteCategoryAsync(id).ConfigureAwait(false);
+            await _adminService.DeleteCategoryAsync(id, ct).ConfigureAwait(false);
             TempData["Success"] = _localizer["Admin_CategoryDeleted"].Value;
         }
         catch (InvalidOperationException ex)
@@ -363,9 +363,9 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ToggleCategoryStatus(int id)
+    public async Task<IActionResult> ToggleCategoryStatus(int id, CancellationToken ct)
     {
-        var success = await _adminService.ToggleCategoryStatusAsync(id).ConfigureAwait(false);
+        var success = await _adminService.ToggleCategoryStatusAsync(id, ct).ConfigureAwait(false);
         if (success)
         {
             TempData["Success"] = _localizer["Admin_CategoryStatusChanged"].Value;

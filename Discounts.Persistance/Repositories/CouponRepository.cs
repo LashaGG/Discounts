@@ -31,9 +31,17 @@ public class CouponRepository : ICouponRepository
             .FirstOrDefaultAsync(c => c.Code == code, ct);
     }
 
+    public Task<Coupon?> GetByCodeWithDiscountAsync(string code, CancellationToken ct = default)
+    {
+        return _context.Coupons
+            .Include(c => c.Discount)
+            .FirstOrDefaultAsync(c => c.Code == code, ct);
+    }
+
     public async Task<IEnumerable<Coupon>> GetByDiscountIdAsync(int discountId, CancellationToken ct = default)
     {
         return await _context.Coupons
+            .AsNoTracking()
             .Include(c => c.Customer)
             .Where(c => c.DiscountId == discountId)
             .OrderByDescending(c => c.PurchasedAt)
@@ -44,6 +52,7 @@ public class CouponRepository : ICouponRepository
     public async Task<IEnumerable<Coupon>> GetByCustomerIdAsync(string customerId, CancellationToken ct = default)
     {
         return await _context.Coupons
+            .AsNoTracking()
             .Include(c => c.Discount)
             .ThenInclude(d => d.Category)
             .Where(c => c.CustomerId == customerId)
@@ -195,6 +204,17 @@ public class CouponRepository : ICouponRepository
                 .ThenInclude(d => d.Merchant)
             .FirstOrDefaultAsync(c => c.Id == couponId &&
                                      c.CustomerId == customerId, ct);
+    }
+
+    public async Task<IReadOnlyList<Coupon>> GetExpiredReservationsAsync(DateTime expirationThreshold, CancellationToken ct = default)
+    {
+        return await _context.Coupons
+            .Include(c => c.Discount)
+            .Where(c => c.Status == CouponStatus.Reserved &&
+                       c.ReservedAt.HasValue &&
+                       c.ReservedAt.Value < expirationThreshold)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
     }
 
     public Task SaveChangesAsync(CancellationToken ct = default)

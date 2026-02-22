@@ -1,8 +1,8 @@
 using System.Globalization;
-using Discounts.Application.Interfaces;
 using Discounts.Infrastructure.Data;
-using Discounts.Infrastructure.Identity;
+using Discounts.Web.Middleware;
 using Microsoft.AspNetCore.Localization;
+using Serilog;
 
 namespace Discounts.Web.Extensions;
 
@@ -13,14 +13,7 @@ public static class ApplicationBuilderExtensions
     /// </summary>
     public static async Task SeedDataAsync(this WebApplication app)
     {
-        using var scope = app.Services.CreateScope();
-        var services = scope.ServiceProvider;
-
-        await RoleSeeder.SeedRolesAsync(services).ConfigureAwait(false);
-        await CategorySeeder.SeedCategoriesAsync(services).ConfigureAwait(false);
-
-        var settingsRepo = services.GetRequiredService<ISystemSettingsRepository>();
-        await SystemSettingsSeeder.SeedDefaultSettingsAsync(settingsRepo).ConfigureAwait(false);
+        await DataSeeder.SeedAllAsync(app).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -28,9 +21,12 @@ public static class ApplicationBuilderExtensions
     /// </summary>
     public static WebApplication UseWebPipeline(this WebApplication app)
     {
+        app.UseMiddleware<GlobalExceptionMiddleware>();
+
+        app.UseSerilogRequestLogging();
+
         if (!app.Environment.IsDevelopment())
         {
-            app.UseExceptionHandler("/Home/Error");
             app.UseHsts();
         }
 

@@ -1,65 +1,94 @@
+using System.Security.Claims;
 using Discounts.Application.DTOs;
 using Discounts.Application.Interfaces;
 using Discounts.Application.Models;
-using Discounts.Domain.Entities.Core;
+using Discounts.Domain.Constants;
+using Discounts.Web.Models;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Discounts.Web.Controllers;
 
-[Authorize(Roles = "Customer")]
+[Authorize(Roles = Roles.Customer)]
 public class CustomerController : Controller
 {
     private readonly ICustomerService _customerService;
     private readonly ICategoryService _categoryService;
-    private readonly UserManager<ApplicationUser> _userManager;
 
     public CustomerController(
         ICustomerService customerService,
-        ICategoryService categoryService,
-        UserManager<ApplicationUser> userManager)
+        ICategoryService categoryService)
     {
         _customerService = customerService;
         _categoryService = categoryService;
-        _userManager = userManager;
     }
+
+    private string? GetUserId() =>
+        User.FindFirstValue(ClaimTypes.NameIdentifier);
 
     // Browse & Search
     [AllowAnonymous]
-    public async Task<IActionResult> Index(int? categoryId, string? search)
+    public async Task<IActionResult> Index(int? categoryId, string? search, CancellationToken ct)
     {
         IEnumerable<DiscountModel> models;
 
         if (categoryId.HasValue)
         {
-            models = await _customerService.GetDiscountsByCategoryAsync(categoryId.Value).ConfigureAwait(false);
+            models = await _customerService.GetDiscountsByCategoryAsync(categoryId.Value, ct).ConfigureAwait(false);
             ViewBag.SelectedCategoryId = categoryId.Value;
         }
         else if (!string.IsNullOrWhiteSpace(search))
         {
-            models = await _customerService.SearchDiscountsAsync(search).ConfigureAwait(false);
+            models = await _customerService.SearchDiscountsAsync(search, ct).ConfigureAwait(false);
             ViewBag.SearchTerm = search;
         }
         else
         {
-            models = await _customerService.GetActiveDiscountsAsync().ConfigureAwait(false);
+            models = await _customerService.GetActiveDiscountsAsync(ct).ConfigureAwait(false);
         }
 
-        var categories = await _categoryService.GetActiveCategoriesAsync().ConfigureAwait(false);
+        var categories = await _categoryService.GetActiveCategoriesAsync(ct).ConfigureAwait(false);
         ViewBag.Categories = categories;
 
         return View(models.Adapt<IEnumerable<DiscountDto>>());
     }
 
     [AllowAnonymous]
+    public async Task<IActionResult> Browse(int page = 1, int pageSize = 12, int? categoryId = null, string? search = null, CancellationToken ct = default)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 12;
+        if (pageSize > 100) pageSize = 100;
+
+        var pagedModel = await _customerService.GetActiveDiscountsPagedAsync(page, pageSize, ct).ConfigureAwait(false);
+
+        var viewModel = new PagedDiscountsViewModel
+        {
+            Items = pagedModel.Items.Adapt<IReadOnlyList<DiscountDto>>(),
+            Page = pagedModel.Page,
+            PageSize = pagedModel.PageSize,
+            TotalCount = pagedModel.TotalCount,
+            TotalPages = pagedModel.TotalPages,
+            HasPreviousPage = pagedModel.HasPreviousPage,
+            HasNextPage = pagedModel.HasNextPage,
+            CategoryId = categoryId,
+            SearchTerm = search
+        };
+
+        var categories = await _categoryService.GetActiveCategoriesAsync(ct).ConfigureAwait(false);
+        ViewBag.Categories = categories;
+
+        return View(viewModel);
+    }
+
+    [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Filter(DiscountFilterDto filter)
+    public async Task<IActionResult> Filter(DiscountFilterDto filter, CancellationToken ct)
     {
         var filterModel = filter.Adapt<DiscountFilterModel>();
-        var models = await _customerService.FilterDiscountsAsync(filterModel).ConfigureAwait(false);
-        var categories = await _categoryService.GetActiveCategoriesAsync().ConfigureAwait(false);
+        var models = await _customerService.FilterDiscountsAsync(filterModel, ct).ConfigureAwait(false);
+        var categories = await _categoryService.GetActiveCategoriesAsync(ct).ConfigureAwait(false);
 
         ViewBag.Categories = categories;
         ViewBag.Filter = filter;
@@ -68,9 +97,9 @@ public class CustomerController : Controller
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Details(int id, CancellationToken ct)
     {
-        var model = await _customerService.GetDiscountDetailsAsync(id).ConfigureAwait(false);
+        var model = await _customerService.GetDiscountDetailsAsync(id, ct).ConfigureAwait(false);
         if (model == null)
             return NotFound();
 
@@ -80,13 +109,13 @@ public class CustomerController : Controller
     // Booking & Purchase
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Reserve(int id)
+    public async Task<IActionResult> Reserve(int id, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Details", new { id }) });
 
-        var resultModel = await _customerService.ReserveCouponAsync(id, userId).ConfigureAwait(false);
+        var resultModel = await _customerService.ReserveCouponAsync(id, userId, ct).ConfigureAwait(false);
         var result = resultModel.Adapt<ReservationResultDto>();
 
         if (result.Success)
@@ -102,13 +131,13 @@ public class CustomerController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Purchase(int discountId)
+    public async Task<IActionResult> Purchase(int discountId, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
-        var model = await _customerService.GetDiscountDetailsAsync(discountId).ConfigureAwait(false);
+        var model = await _customerService.GetDiscountDetailsAsync(discountId, ct).ConfigureAwait(false);
         if (model == null)
             return NotFound();
 
@@ -117,13 +146,13 @@ public class CustomerController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CompletePurchase(int discountId)
+    public async Task<IActionResult> CompletePurchase(int discountId, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
-        var resultModel = await _customerService.PurchaseCouponAsync(discountId, userId).ConfigureAwait(false);
+        var resultModel = await _customerService.PurchaseCouponAsync(discountId, userId, ct).ConfigureAwait(false);
         var result = resultModel.Adapt<PurchaseResultDto>();
 
         if (result.Success)
@@ -138,13 +167,13 @@ public class CustomerController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> PurchaseSuccess(int couponId)
+    public async Task<IActionResult> PurchaseSuccess(int couponId, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
-        var model = await _customerService.GetCouponDetailsAsync(couponId, userId).ConfigureAwait(false);
+        var model = await _customerService.GetCouponDetailsAsync(couponId, userId, ct).ConfigureAwait(false);
         if (model == null)
             return NotFound();
 
@@ -153,13 +182,13 @@ public class CustomerController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CancelReservation(int couponId)
+    public async Task<IActionResult> CancelReservation(int couponId, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
-        var success = await _customerService.CancelReservationAsync(couponId, userId).ConfigureAwait(false);
+        var success = await _customerService.CancelReservationAsync(couponId, userId, ct).ConfigureAwait(false);
 
         if (success)
         {
@@ -175,18 +204,18 @@ public class CustomerController : Controller
 
     // My Coupons
     [HttpGet]
-    public async Task<IActionResult> MyCoupons(string? filter)
+    public async Task<IActionResult> MyCoupons(string? filter, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
         IEnumerable<CouponModel> models = filter switch
         {
-            "active" => await _customerService.GetMyActiveCouponsAsync(userId).ConfigureAwait(false),
-            "used" => await _customerService.GetMyUsedCouponsAsync(userId).ConfigureAwait(false),
-            "expired" => await _customerService.GetMyExpiredCouponsAsync(userId).ConfigureAwait(false),
-            _ => await _customerService.GetAllMyCouponsAsync(userId).ConfigureAwait(false)
+            "active" => await _customerService.GetMyActiveCouponsAsync(userId, ct).ConfigureAwait(false),
+            "used" => await _customerService.GetMyUsedCouponsAsync(userId, ct).ConfigureAwait(false),
+            "expired" => await _customerService.GetMyExpiredCouponsAsync(userId, ct).ConfigureAwait(false),
+            _ => await _customerService.GetAllMyCouponsAsync(userId, ct).ConfigureAwait(false)
         };
 
         ViewBag.Filter = filter;
@@ -194,13 +223,13 @@ public class CustomerController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> CouponDetails(int id)
+    public async Task<IActionResult> CouponDetails(int id, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
-        var model = await _customerService.GetCouponDetailsAsync(id, userId).ConfigureAwait(false);
+        var model = await _customerService.GetCouponDetailsAsync(id, userId, ct).ConfigureAwait(false);
         if (model == null)
             return NotFound();
 
@@ -209,13 +238,13 @@ public class CustomerController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> MarkAsUsed(int id)
+    public async Task<IActionResult> MarkAsUsed(int id, CancellationToken ct)
     {
-        var userId = _userManager.GetUserId(User);
+        var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction("Login", "Account");
 
-        var success = await _customerService.MarkCouponAsUsedAsync(id, userId).ConfigureAwait(false);
+        var success = await _customerService.MarkCouponAsUsedAsync(id, userId, ct).ConfigureAwait(false);
 
         if (success)
         {

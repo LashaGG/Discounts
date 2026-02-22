@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Text;
-using Discounts.Application.Mapping;
 using Discounts.Application.Validators;
+using Discounts.API.Filters;
 using Discounts.Domain.Constants;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,8 +15,6 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        MappingConfig.Configure();
-
         services.AddLocalization(options => 
             options.ResourcesPath = "Resources");
 
@@ -104,6 +102,8 @@ public static class ServiceCollectionExtensions
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             if (File.Exists(xmlPath))
                 options.IncludeXmlComments(xmlPath);
+
+            options.DocumentFilter<HealthChecksDocumentFilter>();
         });
 
         return services;

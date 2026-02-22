@@ -1,9 +1,7 @@
+using Discounts.Application.HealthChecks;
 using Discounts.Application.Interfaces;
-using Discounts.Domain.Entities.Business;
 using Discounts.Domain.Entities.Configuration;
 using Discounts.Domain.Enums;
-using Discounts.Persistance.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace Discounts.Infrastructure.BackgroundServices;
 
@@ -11,14 +9,17 @@ public class ReservationCleanupService : BackgroundService
 {
     private readonly ILogger<ReservationCleanupService> _logger;
     private readonly IServiceProvider _serviceProvider;
-    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(5);
+    private readonly WorkerHealthRegistry _healthRegistry;
+    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(3);
 
     public ReservationCleanupService(
         ILogger<ReservationCleanupService> logger,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        WorkerHealthRegistry healthRegistry)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _healthRegistry = healthRegistry;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -29,8 +30,12 @@ public class ReservationCleanupService : BackgroundService
         {
             try
             {
-                await CleanupExpiredReservationsAsync().ConfigureAwait(false);
+                _healthRegistry.ReportHealthy(nameof(ReservationCleanupService));
+                await CleanupExpiredReservationsAsync(stoppingToken).ConfigureAwait(false);
                 await Task.Delay(_checkInterval, stoppingToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
             }
             catch (Exception ex)
             {
@@ -42,26 +47,23 @@ public class ReservationCleanupService : BackgroundService
         _logger.LogInformation("Reservation Cleanup Service stopped");
     }
 
-    private async Task CleanupExpiredReservationsAsync()
+    private async Task CleanupExpiredReservationsAsync(CancellationToken ct)
     {
         using var scope = _serviceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var couponRepository = scope.ServiceProvider.GetRequiredService<ICouponRepository>();
         var settingsRepo = scope.ServiceProvider.GetRequiredService<ISystemSettingsRepository>();
 
         // Get reservation duration from settings
         var reservationMinutes = await settingsRepo.GetIntValueAsync(
-            SettingsKeys.ReservationDuration, 30).ConfigureAwait(false);
+            SettingsKeys.ReservationDuration, 30, ct).ConfigureAwait(false);
 
         var expirationThreshold = DateTime.UtcNow.AddMinutes(-reservationMinutes);
 
         // Find all expired reservations
-        var expiredReservations = await context.Coupons
-            .Include(c => c.Discount)
-            .Where(c => c.Status == CouponStatus.Reserved &&
-                       c.ReservedAt.HasValue &&
-                       c.ReservedAt.Value < expirationThreshold)
-            .ToListAsync().ConfigureAwait(false);
-        if (!expiredReservations.Any())
+        var expiredReservations = await couponRepository
+            .GetExpiredReservationsAsync(expirationThreshold, ct).ConfigureAwait(false);
+
+        if (expiredReservations.Count == 0)
         {
             _logger.LogDebug("No expired reservations found");
             return;
@@ -71,27 +73,20 @@ public class ReservationCleanupService : BackgroundService
 
         foreach (var coupon in expiredReservations)
         {
-            try
-            {
-                // Release the coupon
-                coupon.Status = CouponStatus.Available;
-                coupon.CustomerId = null;
-                coupon.ReservedAt = null;
+            // Release the coupon
+            coupon.Status = CouponStatus.Available;
+            coupon.CustomerId = null;
+            coupon.ReservedAt = null;
 
-                // Increase available coupons count
-                coupon.Discount.AvailableCoupons++;
+            // Increase available coupons count
+            coupon.Discount.AvailableCoupons++;
 
-                _logger.LogInformation(
-                    "Released expired reservation - Coupon: {CouponId}, Discount: {DiscountId}",
-                    coupon.Id, coupon.DiscountId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to release coupon {CouponId}", coupon.Id);
-            }
+            _logger.LogInformation(
+                "Released expired reservation - Coupon: {CouponId}, Discount: {DiscountId}",
+                coupon.Id, coupon.DiscountId);
         }
 
-        await context.SaveChangesAsync().ConfigureAwait(false);
+        await couponRepository.SaveChangesAsync(ct).ConfigureAwait(false);
         _logger.LogInformation("Successfully cleaned up {Count} expired reservations", expiredReservations.Count);
     }
 }

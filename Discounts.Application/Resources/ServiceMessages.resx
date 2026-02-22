@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute name="xml:space" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- ==================== RESERVATION ==================== -->
+  <data name="Service_DiscountNotFound" xml:space="preserve"><value>Discount not found</value></data>
+  <data name="Service_DiscountNoLongerActive" xml:space="preserve"><value>Discount is no longer active</value></data>
+  <data name="Service_CouponsSoldOut" xml:space="preserve"><value>Coupons are sold out</value></data>
+  <data name="Service_AlreadyReserved" xml:space="preserve"><value>You already have a reservation for this discount</value></data>
+  <data name="Service_NoCouponAvailable" xml:space="preserve"><value>No available coupon found</value></data>
+  <data name="Service_CouponReservedSuccessfully" xml:space="preserve"><value>Coupon reserved successfully</value></data>
+
+  <!-- ==================== PURCHASE ==================== -->
+  <data name="Service_CouponNotFound" xml:space="preserve"><value>Coupon not found</value></data>
+  <data name="Service_CouponPurchasedSuccessfully" xml:space="preserve"><value>Coupon purchased successfully</value></data>
+
+  <!-- ==================== AUTH ==================== -->
+  <data name="Service_InvalidCredentials" xml:space="preserve"><value>Invalid email or password</value></data>
+  <data name="Service_AccountDeactivated" xml:space="preserve"><value>Account is deactivated</value></data>
+  <data name="Service_EmailAlreadyRegistered" xml:space="preserve"><value>Email is already registered</value></data>
+  <data name="Service_InvalidRole" xml:space="preserve"><value>Invalid role</value></data>
+  <data name="Service_RegistrationSuccessful" xml:space="preserve"><value>Registration completed successfully</value></data>
+  <data name="Service_InvalidToken" xml:space="preserve"><value>Invalid token</value></data>
+  <data name="Service_UserNotFound" xml:space="preserve"><value>User not found</value></data>
+  <data name="Service_InvalidRefreshToken" xml:space="preserve"><value>Invalid refresh token</value></data>
+
+  <!-- ==================== MERCHANT ==================== -->
+  <data name="Service_DiscountedPriceMustBeLess" xml:space="preserve"><value>Discounted price must be less than original price</value></data>
+  <data name="Service_EndDateMustBeAfterStart" xml:space="preserve"><value>End date must be after start date</value></data>
+  <data name="Service_StartDateCannotBeInPast" xml:space="preserve"><value>Start date cannot be in the past</value></data>
+  <data name="Service_NoPermissionToEdit" xml:space="preserve"><value>You do not have permission to edit this discount</value></data>
+  <data name="Service_EditWindowExpired" xml:space="preserve"><value>Discount can only be edited within {0} hours of creation</value></data>
+  <data name="Service_CannotDeleteWithSoldCoupons" xml:space="preserve"><value>Cannot delete discount with sold coupons</value></data>
+
+  <!-- ==================== ADMIN ==================== -->
+  <data name="Service_CannotDeleteCategoryWithDiscounts" xml:space="preserve"><value>Category cannot be deleted because it has associated discounts</value></data>
+</root>

@@ -46,7 +46,9 @@ public sealed class GlobalExceptionMiddleware
         {
             Status = (int)statusCode,
             Title = title,
-            Detail = exception.Message,
+            Detail = statusCode == HttpStatusCode.InternalServerError
+                ? "An unexpected error occurred. Please try again later."
+                : exception.Message,
             Instance = context.Request.Path
         };
 

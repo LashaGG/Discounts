@@ -4,11 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Discounts.Application;
 using Discounts.Application.Interfaces;
 using Discounts.Application.Models;
 using Discounts.Domain.Constants;
 using Discounts.Domain.Entities.Core;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Discounts.Infrastructure.Services;
@@ -17,13 +19,16 @@ public class AuthService : IAuthService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _configuration;
+    private readonly IStringLocalizer<ServiceMessages> _localizer;
 
     public AuthService(
         UserManager<ApplicationUser> userManager,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IStringLocalizer<ServiceMessages> localizer)
     {
         _userManager = userManager;
         _configuration = configuration;
+        _localizer = localizer;
     }
 
     public async Task<AuthResponseModel> LoginAsync(LoginRequestModel request, CancellationToken ct = default)
@@ -31,12 +36,12 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByEmailAsync(request.Email).ConfigureAwait(false);
         if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password).ConfigureAwait(false))
         {
-            return new AuthResponseModel { Success = false, Message = "არასწორი ელ-ფოსტა ან პაროლი" };
+            return new AuthResponseModel { Success = false, Message = _localizer["Service_InvalidCredentials"] };
         }
 
         if (!user.IsActive)
         {
-            return new AuthResponseModel { Success = false, Message = "ანგარიში დეაქტივირებულია" };
+            return new AuthResponseModel { Success = false, Message = _localizer["Service_AccountDeactivated"] };
         }
 
         var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
@@ -63,12 +68,12 @@ public class AuthService : IAuthService
         var existingUser = await _userManager.FindByEmailAsync(request.Email).ConfigureAwait(false);
         if (existingUser != null)
         {
-            return new AuthResponseModel { Success = false, Message = "ელ-ფოსტა უკვე რეგისტრირებულია" };
+            return new AuthResponseModel { Success = false, Message = _localizer["Service_EmailAlreadyRegistered"] };
         }
 
         if (request.Role != Roles.Customer && request.Role != Roles.Merchant)
         {
-            return new AuthResponseModel { Success = false, Message = "დაუშვებელი როლი" };
+            return new AuthResponseModel { Success = false, Message = _localizer["Service_InvalidRole"] };
         }
 
         var user = new ApplicationUser
@@ -107,7 +112,7 @@ public class AuthService : IAuthService
             UserId = user.Id,
             Email = user.Email,
             Roles = roles.ToList(),
-            Message = "რეგისტრაცია წარმატებით დასრულდა"
+            Message = _localizer["Service_RegistrationSuccessful"]
         };
     }
 
@@ -116,19 +121,19 @@ public class AuthService : IAuthService
         var principal = GetPrincipalFromExpiredToken(request.Token);
         if (principal == null)
         {
-            return new AuthResponseModel { Success = false, Message = "არასწორი ტოკენი" };
+            return new AuthResponseModel { Success = false, Message = _localizer["Service_InvalidToken"] };
         }
 
         var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userId))
         {
-            return new AuthResponseModel { Success = false, Message = "არასწორი ტოკენი" };
+            return new AuthResponseModel { Success = false, Message = _localizer["Service_InvalidToken"] };
         }
 
         var user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
         if (user == null || !user.IsActive)
         {
-            return new AuthResponseModel { Success = false, Message = "მომხმარებელი ვერ მოიძებნა" };
+            return new AuthResponseModel { Success = false, Message = _localizer["Service_UserNotFound"] };
         }
 
         var storedRefreshToken = await _userManager.GetAuthenticationTokenAsync(
@@ -136,7 +141,7 @@ public class AuthService : IAuthService
 
         if (storedRefreshToken != request.RefreshToken)
         {
-            return new AuthResponseModel { Success = false, Message = "არასწორი refresh ტოკენი" };
+            return new AuthResponseModel { Success = false, Message = _localizer["Service_InvalidRefreshToken"] };
         }
 
         var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);

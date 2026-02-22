@@ -23,11 +23,11 @@ public class GlobalExceptionMiddleware
     {
         try
         {
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            await HandleExceptionAsync(context, ex);
+            await HandleExceptionAsync(context, ex).ConfigureAwait(false);
         }
     }
 
@@ -85,7 +85,7 @@ public class GlobalExceptionMiddleware
 
         context.Response.StatusCode = (int)statusCode;
         context.Response.ContentType = "application/problem+json";
-        await context.Response.WriteAsJsonAsync(problemDetails);
+        await context.Response.WriteAsJsonAsync(problemDetails).ConfigureAwait(false);
     }
 
     private static bool IsApiRequest(HttpContext context)

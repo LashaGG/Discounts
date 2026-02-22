@@ -19,6 +19,7 @@ public interface IDiscountRepository
 
     // Active discount queries (with Category/Merchant includes)
     Task<IEnumerable<Discount>> GetActiveWithDetailsAsync(CancellationToken ct = default);
+    Task<(IReadOnlyList<Discount> Items, int TotalCount)> GetActivePagedAsync(int page, int pageSize, CancellationToken ct = default);
     Task<IEnumerable<Discount>> GetActiveByCategoryAsync(int categoryId, CancellationToken ct = default);
     Task<IEnumerable<Discount>> SearchActiveAsync(string searchTerm, CancellationToken ct = default);
     Task<IEnumerable<Discount>> FilterActiveAsync(DiscountFilterModel filter, CancellationToken ct = default);
@@ -27,4 +28,9 @@ public interface IDiscountRepository
     // Dashboard queries
     Task<IEnumerable<Discount>> GetRecentWithDetailsAsync(int count, CancellationToken ct = default);
     Task<IEnumerable<Discount>> GetPendingWithDetailsAsync(CancellationToken ct = default);
+
+    // Background service queries
+    Task<IReadOnlyList<Discount>> GetExpiredActiveWithCouponsAsync(DateTime now, CancellationToken ct = default);
+    Task<IEnumerable<Discount>> GetByMerchantIdAndStatusAsync(string merchantId, DiscountStatus status, CancellationToken ct = default);
+    Task SaveChangesAsync(CancellationToken ct = default);
 }

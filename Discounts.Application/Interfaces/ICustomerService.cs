@@ -5,6 +5,7 @@ namespace Discounts.Application.Interfaces;
 public interface ICustomerService
 {
     Task<IEnumerable<DiscountModel>> GetActiveDiscountsAsync(CancellationToken ct = default);
+    Task<PagedResult<DiscountModel>> GetActiveDiscountsPagedAsync(int page, int pageSize, CancellationToken ct = default);
     Task<IEnumerable<DiscountModel>> GetDiscountsByCategoryAsync(int categoryId, CancellationToken ct = default);
     Task<IEnumerable<DiscountModel>> SearchDiscountsAsync(string searchTerm, CancellationToken ct = default);
     Task<IEnumerable<DiscountModel>> FilterDiscountsAsync(DiscountFilterModel filter, CancellationToken ct = default);

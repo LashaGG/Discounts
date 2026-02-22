@@ -1,11 +1,14 @@
 using System.Security.Claims;
+using Discounts.Application.Commands;
 using Discounts.Application.DTOs;
 using Discounts.Application.Interfaces;
 using Discounts.Application.Models;
+using Discounts.API.Requests;
 using Discounts.Domain.Constants;
 using Discounts.Domain.Enums;
 using FluentValidation;
 using Mapster;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,15 +21,18 @@ namespace Discounts.API.Controllers;
 public class MerchantController : ControllerBase
 {
     private readonly IMerchantService _merchantService;
+    private readonly IMediator _mediator;
     private readonly IValidator<CreateDiscountDto> _createValidator;
     private readonly IValidator<UpdateDiscountDto> _updateValidator;
 
     public MerchantController(
         IMerchantService merchantService,
+        IMediator mediator,
         IValidator<CreateDiscountDto> createValidator,
         IValidator<UpdateDiscountDto> updateValidator)
     {
         _merchantService = merchantService;
+        _mediator = mediator;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
     }
@@ -86,6 +92,25 @@ public class MerchantController : ControllerBase
         return CreatedAtAction(nameof(GetDiscount), new { id = result.Id }, result);
     }
 
+    /// <summary>
+    /// Creates a new discount via the MediatR CQRS pipeline.
+    /// Validation is handled automatically by the ValidationBehavior pipeline.
+    /// </summary>
+    [HttpPost("discounts/v2")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<DiscountDto>> CreateDiscountV2(
+        [FromBody] CreateDiscountDto dto,
+        CancellationToken ct)
+    {
+        var command = dto.Adapt<CreateDiscountCommand>() with { MerchantId = GetUserId() };
+
+        var created = await _mediator.Send(command, ct).ConfigureAwait(false);
+
+        var result = created.Adapt<DiscountDto>();
+        return CreatedAtAction(nameof(GetDiscount), new { id = result.Id }, result);
+    }
+
     [HttpPut("discounts/{id:int}")]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<DiscountDto>> UpdateDiscount(
@@ -124,5 +149,30 @@ public class MerchantController : ControllerBase
     {
         var canEdit = await _merchantService.CanEditDiscountAsync(id, GetUserId(), ct).ConfigureAwait(false);
         return new { canEdit };
+    }
+
+    /// <summary>
+    /// Redeems a customer's coupon by code, marking it as Used.
+    /// </summary>
+    [HttpPost("coupons/redeem")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RedeemCoupon([FromBody] RedeemCouponRequest request, CancellationToken ct)
+    {
+        var (success, message) = await _merchantService.RedeemCouponAsync(
+            request.CouponCode, GetUserId(), ct).ConfigureAwait(false);
+
+        if (!success)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Redemption Failed",
+                Detail = message
+            });
+        }
+
+        return Ok(new { message });
     }
 }

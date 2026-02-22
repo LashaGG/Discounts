@@ -1,8 +1,12 @@
+using Discounts.Application.Behaviors;
+using Discounts.Application.HealthChecks;
 using Discounts.Application.Interfaces;
+using Discounts.Application.Mapping;
 using Discounts.Domain.Entities.Core;
 using Discounts.Infrastructure.Services;
 using Discounts.Persistance.Data;
 using Discounts.Persistance.Repositories;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +18,9 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // Configure Mapster mappings (idempotent — safe if called from multiple entry points)
+        MappingConfig.Configure();
+
         // Add DbContext
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
@@ -65,8 +72,17 @@ public static class DependencyInjection
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IAccountService, AccountService>();
+
+        // Register MediatR (handlers live in this assembly)
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+        });
 
         // Register Background Services
+        services.AddSingleton<WorkerHealthRegistry>();
         services.AddHostedService<BackgroundServices.ReservationCleanupService>();
         services.AddHostedService<BackgroundServices.OfferExpirationService>();
 

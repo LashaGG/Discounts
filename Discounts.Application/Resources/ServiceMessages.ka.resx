@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute name="xml:space" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- ==================== RESERVATION ==================== -->
+  <data name="Service_DiscountNotFound" xml:space="preserve"><value>ფასდაკლება ვერ მოიძებნა</value></data>
+  <data name="Service_DiscountNoLongerActive" xml:space="preserve"><value>ფასდაკლება აღარ არის აქტიური</value></data>
+  <data name="Service_CouponsSoldOut" xml:space="preserve"><value>კუპონები ამოიწურა</value></data>
+  <data name="Service_AlreadyReserved" xml:space="preserve"><value>თქვენ უკვე გაქვთ ამ ფასდაკლების ჯავშანი</value></data>
+  <data name="Service_NoCouponAvailable" xml:space="preserve"><value>ხელმისაწვდომი კუპონი ვერ მოიძებნა</value></data>
+  <data name="Service_CouponReservedSuccessfully" xml:space="preserve"><value>კუპონი წარმატებით დაჯავშნილია</value></data>
+
+  <!-- ==================== PURCHASE ==================== -->
+  <data name="Service_CouponNotFound" xml:space="preserve"><value>კუპონი ვერ მოიძებნა</value></data>
+  <data name="Service_CouponPurchasedSuccessfully" xml:space="preserve"><value>კუპონი წარმატებით შეძენილია</value></data>
+
+  <!-- ==================== AUTH ==================== -->
+  <data name="Service_InvalidCredentials" xml:space="preserve"><value>არასწორი ელ-ფოსტა ან პაროლი</value></data>
+  <data name="Service_AccountDeactivated" xml:space="preserve"><value>ანგარიში დეაქტივირებულია</value></data>
+  <data name="Service_EmailAlreadyRegistered" xml:space="preserve"><value>ელ-ფოსტა უკვე რეგისტრირებულია</value></data>
+  <data name="Service_InvalidRole" xml:space="preserve"><value>დაუშვებელი როლი</value></data>
+  <data name="Service_RegistrationSuccessful" xml:space="preserve"><value>რეგისტრაცია წარმატებით დასრულდა</value></data>
+  <data name="Service_InvalidToken" xml:space="preserve"><value>არასწორი ტოკენი</value></data>
+  <data name="Service_UserNotFound" xml:space="preserve"><value>მომხმარებელი ვერ მოიძებნა</value></data>
+  <data name="Service_InvalidRefreshToken" xml:space="preserve"><value>არასწორი refresh ტოკენი</value></data>
+
+  <!-- ==================== MERCHANT ==================== -->
+  <data name="Service_DiscountedPriceMustBeLess" xml:space="preserve"><value>ფასდაკლებული ფასი უნდა იყოს ნაკლები ორიგინალურ ფასზე</value></data>
+  <data name="Service_EndDateMustBeAfterStart" xml:space="preserve"><value>დასრულების თარიღი უნდა იყოს დაწყების თარიღზე გვიან</value></data>
+  <data name="Service_StartDateCannotBeInPast" xml:space="preserve"><value>დაწყების თარიღი არ შეიძლება იყოს წარსულში</value></data>
+  <data name="Service_NoPermissionToEdit" xml:space="preserve"><value>თქვენ არ გაქვთ ამ ფასდაკლების რედაქტირების უფლება</value></data>
+  <data name="Service_EditWindowExpired" xml:space="preserve"><value>ფასდაკლების რედაქტირება შესაძლებელია მხოლოდ {0} საათის განმავლობაში</value></data>
+  <data name="Service_CannotDeleteWithSoldCoupons" xml:space="preserve"><value>გაყიდული კუპონების მქონე ფასდაკლება ვერ წაიშლება</value></data>
+
+  <!-- ==================== ADMIN ==================== -->
+  <data name="Service_CannotDeleteCategoryWithDiscounts" xml:space="preserve"><value>კატეგორია ვერ წაიშლება, რადგან მას აქვს ფასდაკლებები მიბმული</value></data>
+</root>

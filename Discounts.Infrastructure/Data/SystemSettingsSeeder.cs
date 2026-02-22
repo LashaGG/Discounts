@@ -12,7 +12,7 @@ public static class SystemSettingsSeeder
             new()
             {
                 Key = SettingsKeys.ReservationDuration,
-                Value = "30",
+                Value = "3",
                 Description = "Reservation duration in minutes"
             },
             new()

@@ -20,6 +20,8 @@ try
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApplication();
     builder.Services.AddJwtAuthentication(builder.Configuration);
+    builder.Services.AddCustomHealthChecks(
+        builder.Configuration.GetConnectionString("DefaultConnection")!);
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerWithJwt();
